@@ -1,0 +1,232 @@
+body {
+    background: rgb(56, 0, 54);
+    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    justify-content: center;
+}
+
+.centroblanco {
+    position: relative;
+    background-color: rgb(226, 226, 226);
+    border-radius: 20px;
+    min-width: 500px;
+    width: 50vw;
+    height:auto;
+    margin-left: 24vw;
+    margin-top: 20vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 50px; 
+}
+
+.centroblanco2 {
+    position: relative;
+    background-color: rgb(226, 226, 226);
+    border-radius: 20px;
+    min-width: 500px;
+    width: 50vw;
+    height:auto;
+    margin-left: 24vw;
+    margin-top: 1vh;
+    text-align: center;
+    justify-content: center;
+    padding-bottom: 50px; 
+}
+
+#contenedorTitulo {
+    position: absolute;
+    width: 70vw;
+    height: 25vh;
+    top: 0;
+    left: 15vw;
+    color: white;
+    padding-top: 5vh;
+}
+#titulo {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 50px;
+}
+
+.contenedorcentroderecha{
+    width: 50%;
+    padding-top: 5%;
+    text-align: center;
+}
+.contenedorcentroIzquierda{
+    width: 50%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+}
+.contenedorUsuario{
+    position: relative;
+    background-color: rgb(226, 226, 226);
+    border-radius: 20px;
+    width:100%;
+    height:auto;
+    margin-left: 24vw;
+    margin-top: 20vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 50px; 
+}
+
+.contenedorDerechaDireccion{
+    width: 99%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+}
+.contenedorIzquierdaDireccion{
+    width: 1%;
+    padding-top: 5%;
+    text-align: center;
+}
+
+.contenedorLargo{
+    width: 100%;
+    padding-top: 5%;
+    align-self: initial;
+}
+.cajatexto{
+	padding: 5px;
+	margin: 10px;/*Este dato para darle el efecto con el placeholder*/
+	border-radius: 5px;
+	border: 1px solid #0970af;
+	width: 70%;
+    color: black;
+    transition: all 0.5s ease-in-out;
+    height: 25px;
+}
+.cajatexto2{
+	width: 50%;    
+}
+#sinadasucede{
+    color:white;
+    position:absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 15vh;
+}
+@media only screen and (max-width: 700px) {
+    .centroblanco {
+        min-width: auto;
+        width: 70vw;
+        margin-right:15vw;
+        margin-top: 30vh;
+    }
+    .cajatexto{
+       width: 100%;
+       margin-left: 0px;
+       margin-top: 10px;
+    }
+}
+/*-------------------------------------------*/
+.lema{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+}
+#lbl_usuario {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+}
+
+
+#contenedorcerro{/*contiene el texto de la pantalla nolog*/
+    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    color: white;
+    position:absolute;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+}
+#cerrosession{
+    font-size:25px;
+}
+
+#sinadasucede{
+    color:white;
+    position:absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 15vh;
+}
+
+.btnFormat{
+	border-radius: 17px;
+	color: #FFF;
+	position: relative;
+	border: 0px;
+	margin: 10px 0 0 0;
+	height: 40px;
+	width: 80px;	
+}
+
+#btn_login,#btn_registrar,#btn_recuperar,#btn_cambio{
+    background: #0970af;
+}
+#btn_registro{
+	background: #af5f09;
+	justify-self: center;
+}
+
+#btn_login:hover,#btn_registrar:hover,#btn_recuperar:hover,#btn_cambio{
+	background: #1A91DA;
+	cursor: pointer;
+}
+#btn_registro:hover{
+	background: #da871a;
+	cursor: pointer;
+}
+
+#btn_cancelar{
+    background: #dc3545;
+	padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+	
+    font-family:Arial;     
+    font-family: 'Raleway', sans-serif;
+}
+
+#btn_cancelar:hover{
+    background: #c82333;
+	cursor: pointer;
+}
+#logoLogin{
+    max-width: 65%;
+}
+
+.errMsg{
+    color: red;
+}
+.container-fluid{
+    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+}
+
+.popup:hover{
+    cursor: pointer;
+}
+/*.frenillos{
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-family: arial;
+}*/

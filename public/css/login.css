@@ -1,0 +1,8 @@
+.lblRecuperarContra{
+    transition: font-size 200ms ease-in-out;
+    line-height: 2;
+}
+.lblRecuperarContra:hover{
+    font-size: larger;
+    cursor: pointer;
+}

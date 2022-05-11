@@ -1,0 +1,32 @@
+.titulo{
+   color: white; 
+}
+.baseCategorias{
+    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    display: block;
+    align-items: center;
+    justify-content: center;
+    padding-left: 20%;
+}
+.baseCategoria{
+    background-color: rgb(187, 187, 187);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    width: 70%;
+}
+
+.categoria{
+    background-color: rgb(14, 28, 28);
+    width: 80%;
+    color: white;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.checkBoxesTodos{
+    text-align: right;
+}
