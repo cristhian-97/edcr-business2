@@ -107,7 +107,7 @@ function notificarEmpresa(nombreCliente,nombreEvento,fechaEvento,horaEvento,nomb
               alertify.error('Ocurrio un error interno al enviar los correos. Por favor intente mas tarde.');
     })
 }
-//
+
 function notificarEmpresaXCandidato(nombreCliente,nombreEvento,fechaEvento,horaEvento,nombreLugar,nombreCategoria,correoEmpresa,empresa,categoria,cliente,cotizacion){
     var form = new FormData();
     form.append('nombreCliente',nombreCliente);  

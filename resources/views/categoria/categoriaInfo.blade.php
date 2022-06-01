@@ -48,24 +48,24 @@
                                     <div class="input-group mt-4">
                                         <div class="col-md-6">
                                             <label style="position: absolute;top:-22px;" class="etiquetasRegistro">Lugar</label>
-                                            <input type="text" id="txtLugar" name="lugar" placeholder="Lugar" title="Lugar" class="cajatextoedt" value="El Silencio">
+                                            <input type="text" id="txtLugar" name="lugar" placeholder="Lugar" title="Lugar" class="cajatextoedt" value="">
                                             <label class="error" id="errorLugar" hidden>Ingrese el lugar</label>
                                         </div>                                    
                                         <div class="col-md-6">
                                             <label style="position: absolute;top:-22px;" class="etiquetasRegistro">Función</label>
-                                            <input type="text" id="txtFuncion" name="funcion" placeholder="Funcion" title="Funcion" class="cajatextoedt" value="Servicio al cliente" >
+                                            <input type="text" id="txtFuncion" name="funcion" placeholder="Funcion" title="Funcion" class="cajatextoedt" value="" >
                                             <label class="error" id="errorFuncion" hidden>Ingrese la función</label>
                                         </div>
                                     </div>
                                     <div class="input-group mt-4">
                                         <div class="col-md-6">
                                             <label style="position: absolute;top:-22px;" class="etiquetasRegistro">Cantidad de candidatos por cotización</label>
-                                            <input type="number" min="1" id="txtCantidad" name="Cantidad" placeholder="Cantidad de candidatos por cotización" title="Cantidad de candidatos por cotización" class="cajatextoedt" value="1" >
+                                            <input type="number" min="1" id="txtCantidad" name="Cantidad" placeholder="Cantidad de candidatos por cotización" title="Cantidad de candidatos por cotización" class="cajatextoedt" value="" >
                                             <label class="error" id="errorCantidad" hidden>Ingrese la cantidad de candidatos por cotización</label>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="txtHoras" style="position: absolute;top:-22px;" class="etiquetasRegistro">Cantidad de Horas</label>
-                                            <input type="number" min="1" id="txtHoras" name="horas" placeholder="Cantidad de Horas" title="Cantidad de Horas" class="cajatextoedt" value="1">
+                                            <input type="number" min="1" id="txtHoras" name="horas" placeholder="Cantidad de Horas" title="Cantidad de Horas" class="cajatextoedt" value="">
                                             <label class="error" id="errorHoras" hidden>Ingrese la cantidad de horas</label>
                                         </div>  
                                     </div>
