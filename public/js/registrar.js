@@ -17,7 +17,7 @@ function iniciar(){
     correoEncargado = document.getElementById('txtCorreoEncargado');
     telEncargado = document.getElementById('txtTelefonoEncargado');
 
-    btnCancelar =  document.getElementById('btn_cancelar');
+    btnCancelar =  document.getElementById('btn_cancelarReg');
     btnRegistrar = document.getElementById('btn_registrar');
 
     //frm.addEventListener('submit', function(event) { validarForm(event)});

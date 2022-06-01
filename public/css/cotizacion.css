@@ -1,5 +1,5 @@
 .baseCategoria{
-    background-color: rgb(255, 255, 255);
+    /*background-color: rgb(255, 255, 255);*/
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -9,7 +9,7 @@
     width: 95%;
 }
 .categoria{
-    background-color: rgb(44, 83, 83);
+    /*background-color:#455A64; rgb(44, 83, 83);*/
     width: 95%;
     color: white;
     border-radius: 20px;
@@ -30,7 +30,7 @@
     font-weight: bold;
 }
 .etiquetaNegra{
-    font-size: 15px;
+    font-size: 17px; /*15px;*/
     font-weight: bold;
 }
 .etiquetaNegra2{
@@ -38,12 +38,18 @@
     font-weight: bold;
 }
 .cCotizacion{
-    background: rgb(183, 180, 180);
+    background:#455A64; /*rgb(183, 180, 180);*/
     padding-right: 5%;
     padding-left: 5%;
 }
+.cCotizacion2{
+    padding-right: 5%;
+    padding-left: 5%;
+    background-color: black;
+}
 .error{
     color: red;
+    font-size: 18px;
 }
 .cotizacion{
     background-color: rgb(255, 255, 255);
@@ -51,10 +57,10 @@
     text-align: center;
     padding-left: 5%;
     padding-right: 5%;
-    border-radius: 1px;
+    border-radius: 1px;    
 }
 .baseCot{
-    background-color:rgb(183, 180, 180);
+    /*background-color:#455A64;rgb(183, 180, 180);*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,15 +98,25 @@
     justify-content: center;
 }
 
-.imgPerfil{
-    width: 30%;
-    padding-top: 2%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
+.carusl{
+   text-align: right;    
+   display: inline-block;
 }
 
 .contenedorImgPerfil{
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
     align-items: center;
-    justify-content: center;
+    justify-content: center; 
+}
+.imgPerfil{
+    flex: 0 0 20%;
+    width: 30%;
+    height: 5%;
+    object-fit: cover;
+    scroll-snap-align: center;
+    margin-left: 15px;
+    margin-bottom: 30px;
 }

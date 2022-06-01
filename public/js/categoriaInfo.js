@@ -1,3 +1,4 @@
+const api = "https://api.exchangerate-api.com/v4/latest/USD";
 window.addEventListener('load',iniciar,false);
 var btn_cancelar,btn_cotizar,btn_cancelarCotizacion,btn_cancelarContactar,btn_atrasPerfil,btn_atrasPago;
 var contenedorCotizacion,contenedorCategoria,contenedorCandidatos,contenedorPago;
@@ -5,7 +6,7 @@ var txtColorOjos,txtMedidas,txtCalzado1,txtCalzado2,txtPeso1,txtPeso2,txtAltura1
 var txtLugar,txtFuncion,nombreCategoria,txtCantidad;
 var txtDireccion, txtCursos, txtSobreMi, txtDemosMusicos, txtDemosDj;
 var chkCalzado, chkPeso, chkAltura, chkFrenillos, chkTattos, chkPasaporte, chkLicencia,chkCompositor,chkLuces, chkEquipoSonido,chkEquipoPropio;
-var slTipoCabello, slIdioma,slIdioma2, slUniforme,slGradoAcademico,slTipoFacturacion;
+var slTipoCabello, slIdioma,slIdioma2, slUniforme,slGradoAcademico,slTipoFacturacion,slTipoMoneda;
 var idCategoria,precioCategoria;
 var areasTrabajo;
 var contenedorContactar,contenedorPerfil,perfil;
@@ -15,7 +16,19 @@ var correosDestinos = [];
 var datosList = [];
 var posActual=0;
 var areasT = [];
+var perfiles = [];
 var precioComision;
+var dtFechaEvento, tmHoraEvento;
+var usuarioEDCRAEnviar = "0";
+var idEmpresa;
+var correoedcr;
+var sinFiltros=true;
+var conversion=0;
+var precioCategoriaDol=0;
+var totalDol=0, totalCol=0;
+var comision=0;
+var simbolo="",simboloVisual="";
+var fondoCotizaciones;
 
 function iniciar(){
     btn_cancelar=document.getElementById('btn_cancelar');
@@ -26,12 +39,11 @@ function iniciar(){
     contenedorCategoria = document.getElementById('contenedorCategoria');
     contenedorContactar = document.getElementById('contenedorContactar');
     contenedorPerfil = document.getElementById('contenedorPerfil');
+    fondoCotizaciones = document.getElementById('fondoCotizaciones');
     perfil = document.getElementById('perfil');
     contenedorPago = document.getElementById('contenedorPago');
     btn_atrasPerfil = document.getElementById('btn_atrasPerfil');
     btn_atrasPerfil.addEventListener('click',volverPerfil,false);
-    btn_atrasPago = document.getElementById('btn_atrasPago');
-    btn_atrasPago.addEventListener('click',volverPago,false);
 
     precioComision = document.getElementById('comision');
     
@@ -60,6 +72,7 @@ function iniciar(){
     slIdioma2 = document.getElementById('slIdioma2');
     slUniforme = document.getElementById('slUniforme');
     slTipoFacturacion = document.getElementById('slTipoFacturacion');
+    slTipoMoneda = document.getElementById('slTipoMoneda');
     
 
     chkFrenillos = document.getElementById('chkFrenillos');
@@ -78,6 +91,7 @@ function iniciar(){
 
     idCategoria = document.getElementById('idCategoria');
     precioCategoria = document.getElementById('precioCategoria');
+    console.log(precioCategoria.value);
     btn_cotizar = document.getElementById('btn_cotizar');
     btn_cotizar.addEventListener('click',cotizar,false);
 
@@ -89,10 +103,53 @@ function iniciar(){
     
     contenedorCandidatos =  document.getElementById('contenedorCandidatos');
 
-    var idEmpresa = document.getElementById('idEmpresa');
+    dtFechaEvento = document.getElementById('dtFechaEvento');
+    tmHoraEvento = document.getElementById('tmHoraEvento');
 
-    console.log(idCategoria.value);
+    idEmpresa = document.getElementById('idEmpresa');
+    correoedcr = document.getElementById('correoedcr');    
 }
+
+async function getResults(){
+    fetch(`${api}`)
+        .then(currency => {
+            console.log("Entro");
+            return currency.json();
+        }).then(displayResults);
+}
+  
+function displayResults(currency) {
+    let fromRate = currency.rates["USD"];
+    let toRate = currency.rates["CRC"];
+    conversion = parseFloat(((toRate / fromRate) * Number(precioComision.value)).toFixed(2));
+}
+
+async function getResultsPrecioCat(){
+    fetch(`${api}`)
+        .then(currency => {
+            return currency.json();
+        }).then(displayResultsPrecioCat);
+}
+  
+function displayResultsPrecioCat(currency) {
+    let fromRate = currency.rates["CRC"];
+    let toRate = currency.rates["USD"];
+    precioCategoriaDol = parseFloat(((toRate / fromRate) * Number(precioCategoria.value)).toFixed(2));
+}
+
+async function getResultsTotal(){
+    fetch(`${api}`)
+        .then(currency => {
+            return currency.json();
+        }).then(displayResultsTotal);
+}
+  
+function displayResultsTotal(currency) {
+    let fromRate = currency.rates["CRC"];
+    let toRate = currency.rates["USD"];
+    totalDol = parseFloat(((toRate / fromRate) * Number(totalCol)).toFixed(2));
+}
+
 
 function cancelar(){
     window.location.href = getbaseurl()+'/categorias';
@@ -172,7 +229,9 @@ function checkGenerosMusicas(obj){
     }
 }
  
-function cotizar() {
+async function cotizar() {
+    await getResults();
+    await getResultsPrecioCat();
     var errores = false;
     if(!stringValido(txtHoras.value)){
        document.getElementById('errorHoras').removeAttribute('hidden');
@@ -180,7 +239,7 @@ function cotizar() {
     }else
        document.getElementById('errorHoras').setAttribute('hidden',true);
 
-    /*if(!stringValido(txtLugar.value)){
+    if(!stringValido(txtLugar.value)){
         document.getElementById('errorLugar').removeAttribute('hidden');
         errores=true;
     }else
@@ -190,13 +249,51 @@ function cotizar() {
         document.getElementById('errorFuncion').removeAttribute('hidden');
         errores=true;
     }else
-        document.getElementById('errorFuncion').setAttribute('hidden',true);*/
+        document.getElementById('errorFuncion').setAttribute('hidden',true);
+
+    if(!stringValido(dtFechaEvento.value)){
+        document.getElementById('errorTiempoEvento').removeAttribute('hidden');
+        errores=true;
+    }else
+        document.getElementById('errorTiempoEvento').setAttribute('hidden',true);
+
+    if(!stringValido(tmHoraEvento.value)){
+        document.getElementById('errorTiempoEvento2').removeAttribute('hidden');
+        errores=true;
+    }else
+        document.getElementById('errorTiempoEvento2').setAttribute('hidden',true);        
+
+    if(stringValido(tmHoraEvento.value)){
+        var currentTime = new Date();
+        var dtFecha = dtFechaEvento.value+"a";
+        var anSel = parseInt(dtFecha.substring(0,4));
+        var mesSel = parseInt(dtFecha.substring(5,7));
+        var diaSel = parseInt(dtFecha.substring(8,10));
+        
+        var horaSel = parseInt(tmHoraEvento.value.substring(0,2));
+        var minSel = parseInt(tmHoraEvento.value.substring(3,5));
+        
+        if(anSel==currentTime.getFullYear() && mesSel==(currentTime.getMonth() + 1) && diaSel==currentTime.getDate()){
+            if(horaSel<currentTime.getHours() || (horaSel==currentTime.getHours() && minSel<currentTime.getMinutes())){
+                document.getElementById('errorHoraEvento').removeAttribute('hidden');
+                errores=true;
+            }else
+                document.getElementById('errorHoraEvento').setAttribute('hidden',true);
+        }
+    }
+
 
     if(slTipoFacturacion!=null && slTipoFacturacion.value=="0"){
         document.getElementById('errorTipoFacturacion').removeAttribute('hidden');
         errores=true;
     }else if(slTipoFacturacion!=null && slTipoFacturacion.value!="0")
         document.getElementById('errorTipoFacturacion').setAttribute('hidden',true);
+
+    if(slTipoMoneda!=null && slTipoMoneda.value=="0"){
+        document.getElementById('errorMoneda').removeAttribute('hidden');
+        errores=true;
+    }else if(slTipoMoneda!=null && slTipoMoneda.value!="0")
+        document.getElementById('errorMoneda').setAttribute('hidden',true);        
         
     if(!stringValido(txtCantidad.value)){
         document.getElementById('errorCantidad').removeAttribute('hidden');
@@ -242,6 +339,102 @@ function cotizar() {
 
     if(!errores)
        cotizarCategoria();
+}
+
+function validarCategoria(){
+    var categoria =  parseInt(idCategoria.value);
+    sinFiltros=true;
+    var areasTrabajo = document.getElementsByClassName('chkAT');
+    if(areasTrabajo!=null && areasTrabajo.length>0){
+        for(var a=0; a<areasTrabajo.length; a++){
+            if(areasTrabajo[a].checked){
+                sinFiltros=false;
+                break;
+            }
+        }
+    }
+
+    if(categoria==1 || categoria==2 || categoria==3){
+        if( (txtColorOjos!=null && stringValido(txtColorOjos.value)) ||
+            (txtMedidas!=null && Number(txtMedidas.value)) ||
+            (txtCalzado1!=null && Number(txtCalzado1.value)) ||
+            (txtCalzado2!=null && Number(txtCalzado2.value)) ||
+            (txtPeso1!=null && Number(txtPeso1.value)) ||
+            (txtPeso2!=null && Number(txtPeso2.value)) ||
+            (txtAltura1!=null&&Number(txtAltura1.value)) ||
+            (txtAltura2!=null&&Number(txtAltura2.value)) ||
+            (txtDireccion!=null && stringValido(txtDireccion.value)) ||
+            (txtCursos!=null && stringValido(txtCursos.value)) ||
+            (txtSobreMi!=null && stringValido(txtSobreMi.value)) ||
+            (slGradoAcademico!=null && slGradoAcademico.value!="0") ||
+            (slTipoCabello!=null && slTipoCabello.value!="0") ||
+            (slIdioma!=null && slIdioma.value!="0") ||
+            (slUniforme!=null && slUniforme.value!="0") ||
+            (chkFrenillos!=null && chkFrenillos.checked) ||
+            (chkTattos!=null && chkTattos.checked) ||
+            (chkPasaporte!=null && chkPasaporte.checked) ||
+            (chkLicencia!=null && chkLicencia.checked) )
+             sinFiltros=false;        
+
+        var deportes = document.getElementsByClassName('chkDep');
+        if(deportes!=null && deportes.length>0){
+            for(var a=0; a<deportes.length; a++){
+                if(deportes[a].checked){
+                    sinFiltros=false;
+                    break;
+                }
+            }
+        }
+    }else if(categoria==4 || categoria==7){//Influencers - Presentadores
+        var equipos = document.getElementsByClassName('chkEqu');
+        if(equipos!=null && equipos.length>0){
+            for(var a=0; a<equipos.length; a++){
+                if(equipos[a].checked){
+                    sinFiltros=false;
+                    break;
+                }
+            }
+        }        
+    }else if(categoria==5){//Músicos
+        var musicas = document.getElementsByClassName('chkMus');//Filtro para Músicos
+        if(musicas!=null && musicas.length>0){
+            for(var a=0; a<musicas.length; a++){
+                if(musicas[a].checked){
+                    sinFiltros=false;
+                    break;
+                }
+            }
+        }
+        if((chkCompositor!=null && chkCompositor.checked) ||
+           (slIdioma2!=null && slIdioma2.value!="0") || 
+           (txtInstPrincipal!=null && stringValido(txtInstPrincipal.value)) ||
+           (txtInstSecundario!=null && stringValido(txtInstSecundario.value)) ||
+           (txtDemosMusicos!=null && stringValido(txtDemosMusicos.value)))
+            sinFiltros=false;
+    }else if(categoria==6){//Dj
+        if((chkEquipoPropio!=null && chkEquipoPropio.checked) ||
+           (chkLuces!=null && chkLuces.checked) ||
+           (chkEquipoSonido!=null && chkEquipoSonido.checked) ||
+           (txtDemosDj!=null && stringValido(txtDemosDj.value)))
+            sinFiltros=false;
+
+        var genMusicales = document.getElementsByClassName('chkGMus');//Filtro para Dj
+        if(genMusicales!=null && genMusicales.length>0){
+            for(var a=0; a<genMusicales.length; a++){
+                if(genMusicales[a].checked){
+                    sinFiltros=false;
+                    break;
+                }
+            }
+        }
+    }/*8//Productores audiovisuales
+       9//Transporte
+       10
+       11//Productoras
+       12//Fotógrafos
+       13//Producción de Podcast
+       14//Bailarines 
+    }*/
 }
 
 function cotizarCategoria(){
@@ -340,7 +533,7 @@ function cotizarCategoria(){
     if(chkLuces!=null)
         chkLuces.checked?form.append('luces','SI'):form.append('luces','NO');
     if(chkEquipoSonido!=null)
-        chkEquipoSonido.checked?form.append('equipoSonido','SI'):form.append('equipoSonido','NO');       
+        chkEquipoSonido.checked?form.append('equipoSonido','SI'):form.append('equipoSonido','NO');
 
     if(txtDemosMusicos!=null && stringValido(txtDemosMusicos.value))
         form.append('demos',txtDemosMusicos.value);
@@ -385,13 +578,15 @@ function cotizarCategoria(){
 
     if(txtInstSecundario!=null && stringValido(txtInstSecundario.value))
         form.append('instSecundario',txtInstSecundario.value);
-
+    
+    validarCategoria();
+    sinFiltros?form.append('filtros',"NO"):form.append('filtros',"SI");
     axios.post('cotizar', form)
         .then(function (response) {
                mostrarResultadoCotizacion2(response.data);
         }).catch(function (error) {
-              alertify.error(error.message);
-              alertify.error('Ocurrio un error interno al intentar filtrar. Por favor intente mas tarde.');
+            alertify.set('notifier','position', 'top-right');
+            alertify.error('Ocurrio un error interno al intentar filtrar. Por favor intente mas tarde.');
     })
 }
 
@@ -399,30 +594,66 @@ function cancelarCotizacion() {
     contenedorCotizacion.setAttribute('hidden', true);
     contenedorCategoria.removeAttribute('hidden');
     btn_cancelar.removeAttribute('hidden');
+
+    var contain = document.getElementsByClassName('container-fluid')[0];    
+    contain.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
+    var contentWrapper = document.getElementsByClassName('content-wrapper')[0];
+    contentWrapper.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";       
+    
+    var fondoCotizaciones = document.getElementById('fondoCotizaciones');
+    fondoCotizaciones.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
+
+    var fondoCotizaciones2 = document.getElementById('fondoCotizaciones2');
+    fondoCotizaciones2.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
 }
 
-function mostrarResultadoCotizacion2(relaciones){
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
+}
+
+function mostrarResultadoCotizacion2(relaciones){    
     contenedorCategoria.setAttribute('hidden',true);
     btn_cancelar.setAttribute('hidden',true);
     contenedorCotizacion.removeAttribute('hidden');
     contenedorCandidatos.innerHTML = '';
+    var contain = document.getElementsByClassName('container-fluid')[0];
+    contain.style.background="#000000"; 
+    var contentWrapper = document.getElementsByClassName('content-wrapper')[0];
+    contentWrapper.style.background="#000000";   
+
+    var fondoCotizaciones = document.getElementById('fondoCotizaciones');
+    fondoCotizaciones.style.background="#000000";
+
+    var fondoCotizaciones2 = document.getElementById('fondoCotizaciones2');
+    fondoCotizaciones2.style.background="#000000";    
+    
     idCat = idCategoria.value;
-    precioCat = precioCategoria.value;
+    if(slTipoMoneda.value=="dolar"){
+        precioCat = precioCategoriaDol;
+        simbolo = "dolar";
+        simboloVisual="$";
+    }else{
+        precioCat = precioCategoria.value;
+        simbolo="colon";
+        simboloVisual="₡";
+    }
+
     var contador = 1;
-    var errSLP = contador+"_error"; 
+    var errSLP = contador+"_error";
     clienteList = [];
     correosDestinos =[];
     datosList = [];
     areasT = [];
+    perfiles = [];
 
     nombresAEnviar= [];
-    /*if(relaciones!="vacio"){
-        console.log(relaciones);
-    }else */if(relaciones!="vacio"){
+    if(relaciones!="vacio"){
         relaciones.forEach((value,i) => {
             value[2].forEach((atr) => {
-                areasT.push(atr);
-                
+                areasT.push(atr);                
+            });
+            value[3].forEach((prf) => {
+                perfiles.push(prf);                
             });
                     var hoy = new Date();
                     var fec = hoy.getDate() + "/" + (hoy.getMonth() +1) + "/" + hoy.getFullYear();
@@ -435,28 +666,43 @@ function mostrarResultadoCotizacion2(relaciones){
                     var nombres = "";
                     var enviarA="";
                     var usuarioEDCR="";
-                    var comision=0;
-                    var iva = importe*0.13;
                     
-                    if (slTipoFacturacion.value=="edcr"){
-                        nombres = '<td>EDCR</td>';
-                        enviarA = '<td>edcr@gmail.com</td>';
-                        usuarioEDCR+='<td>EDCR</td>';
+                    var iva = importe*0.13;
+                    usuarioEDCRAEnviar = "0";
+                    
+                    if(slTipoMoneda.value=="dolar")
                         comision= Number(precioComision.value);
+                    else
+                        comision= conversion;
+                    if (slTipoFacturacion.value=="edcr"){
+                        nombres = '<td style="font-size:17px;">EDCR</td>';
+                        enviarA = '<td style="font-size:17px;">'+correoedcr.value+'</td>';
+                        usuarioEDCR+='<td style="font-size:17px;">EDCR</td>';                       
+
+                        usuarioEDCRAEnviar = "EDCR";
                     }else if(slTipoFacturacion.value=="candidatos"){                        
                         value[0].forEach((cl) => {
-                            nombres+= '<td>'+cl['nombreCliente']+'</td><br>';
-                            enviarA+='<td>'+cl['correo']+'</td><br>';
-                            usuarioEDCR+='<td>'+cl['nombreCliente']+'</td><br>';
+                            nombres+= '<td style="font-size:17px;">'+cl['nombreCliente']+'</td><br>';
+                            enviarA+='<td style="font-size:17px;">'+cl['correo']+'</td><br>';
+                            usuarioEDCR+='<td style="font-size:17px;">'+cl['nombreCliente']+'</td><br>';
                         });
                     }
-                    var total = importe+comision+iva;
+                    
+                    var totalAux = importe+(comision)+iva;
+                    var total = roundToTwo(totalAux);
+                    totalDol=0;
+                    if(simbolo=="colon"){
+                        totalCol=total;
+                        getResultsTotal();
+                    }else
+                      totalDol=total;
+
                     base = '<div class="baseCot">'
                                 +'<div class="cotizacion">'
                                 +'<div class="input-group mt-4">'
                                     +'<div class="col-md-6">'
                                         +'<div id="contenedorLogo">'
-                                          +'<img id="logo" src='+"/img/logo.jpg"+'>'
+                                          +'<img id="logo" src='+"/img/logo.png"+'>'
                                         +'</div>'
                                     +'</div>'
                                     +'<div class="col-md-6" style="width: 100%;text-align:right;">'
@@ -474,7 +720,7 @@ function mostrarResultadoCotizacion2(relaciones){
                                         +'<label class="etiquetaNegra">Cotización #</th>'
                                     +'</div>'
                                     +'<div class="col-md-2" style="width: 100%;text-align:right;">'
-                                        +'<td>'+contador+'</td>'
+                                        +'<td style="font-size:17px;">'+contador+'</td>'
                                     +'</div>'
                                 +'</div>'
                                 +'<div class="input-group mt-4 justificada">'
@@ -487,7 +733,7 @@ function mostrarResultadoCotizacion2(relaciones){
                                     +'<div class="col-md-3" style="width: 100%;text-align:right;">'
                                         +'<label class="etiquetaNegra">Fecha de la cotización</label>'
                                     +'</div>'
-                                    +'<div class="col-md-2" style="width: 100%;text-align:right;">'
+                                    +'<div class="col-md-2" style="width: 100%;text-align:right;font-size: 17px;">'
                                         +'<td>'+fec+'</td>'
                                     +'</div>'
                                 +'</div>'
@@ -501,20 +747,18 @@ function mostrarResultadoCotizacion2(relaciones){
                                 +'</div>'
                                 +'<div class="input-group mt-4 justificada">'
                                     +'<div class="col-md-3">'
-                                        +'<select class="btn" style="border-color:black" id='+contador+' required="">';
-                                        
+                                        +'<select class="selcCot" style="border-color:black" id='+contador+' required="">';                                        
                                         value[0].forEach((cl) => {
-                                                base+= '<option value='+cl['codigo']+'>'+cl['nombreCliente']+'</option>';
+                                                base+= '<option value='+cl['codigo']+' class="selcValue">'+cl['nombreCliente']+'</option>';
                                                 clienteList.push(cl);
-                                                correosDestinos.push([cl['correo'],contador,cl['nombreCliente']]);
+                                                correosDestinos.push([cl['correo'],contador,cl['nombreCliente'],cl['codigo']]);
                                                 nombresAEnviar.push(['<td>'+cl['nombreCliente']+'</td><br>',contador]);
-                                                console.log("codigo: "+cl['codigo']);
                                             });                                            
                                         base+='</select>'
                                         +'<label class="error '+errSLP+'" hidden>Seleccione el Candidato</label>'
                                     +'</div>'
                                     +'<div class="col-md-3">'
-                                        +'<input type="button" value="Ver Perfil" name="btn_verPerfil" class="btn btn-success" onClick="verPerfil('+contador+')">'
+                                        +'<input type="button" value="Ver Perfil" name="btn_verPerfil" class="btn_verPerfil" onClick="verPerfil('+contador+')">'                                       
                                     +'</div>'
                                +'</div>';                                
                                base+= '<br>'
@@ -528,51 +772,53 @@ function mostrarResultadoCotizacion2(relaciones){
                                         +'</thead>'
                                         +'<tbody>'
                                             +'<tr>'
-                                                +'<td>'+value[1]+'</td>'
-                                                +'<td>'
+                                                +'<td style="font-size:17px;">'+value[1]+'</td>'
+                                                +'<td style="font-size:17px;">'
                                                     +'<label>Categoría: </label>'+nombreCategoria.value+'<br>'
                                                     +'<label>Lugar: </label>'+txtLugar.value+'<br>'
                                                     +'<label>Función: </label>'+txtFuncion.value+'<br>'
                                                     +'<label>Disponibilidad: </label>'+disp+'<br>'
                                                     +'<label>Transporte: </label>'+transp+'<br>'
+                                                    +'<label>Fecha del Evento: </label>'+dtFechaEvento.value+'<br>'
+                                                    +'<label>Hora del Evento: </label>'+tmHoraEvento.value+'<br>'
                                                 +'</td>'
-                                                +'<td>'+precioCat+'</td><td>'+importe+'</td>'
+                                                +'<td style="font-size:17px;">'+precioCat+'</td><td style="font-size:17px;">'+importe+'</td>'
                                             +'</tr>'
                                             +'<tr>'
                                                +'<td></td>'
                                                +'<td></td>'
-                                               +'<td>Subtotal</td>'
-                                               +'<td>'+importe+'</td>'
+                                               +'<td style="font-size:17px;">Subtotal</td>'
+                                               +'<td style="font-size:17px;"> '+simboloVisual+''+importe+'</td>'
                                             +'</tr>'
                                                 +'<tr>'
                                                 +'<td></td>'
                                                 +'<td></td>'
-                                                +'<td>Comisión</td>'
-                                                +'<td>'+comision+'</td>'
+                                                +'<td style="font-size:17px;">Comisión</td>'
+                                                +'<td style="font-size:17px;"> '+simboloVisual+''+comision+'</td>'
                                             +'</tr>'
                                             +'<tr>'
                                                +'<td></td>'
                                                +'<td></td>'
-                                               +'<td>Valor Agregado 13.0%</td>'
-                                               +'<td>'+iva+'</td>'
+                                               +'<td style="font-size:17px;">Valor Agregado 13.0%</td>'
+                                               +'<td style="font-size:17px;"> '+simboloVisual+''+iva+'</td>'
                                             +'</tr>'
                                             +'<tr>'
                                                +'<td></td>'
                                                +'<td></td>'
                                                +'<td><label class="etiquetaNegra2">TOTAL</label></td>'
-                                               +'<td> <label class="etiquetaNegra2"> ₡'+total+'</label></td>'
+                                               +'<td> <label class="etiquetaNegra2"> '+simboloVisual+''+total+'</label></td>'
                                             +'</tr>'
                                             +'<tr>'
                                                 +'<td></td>'
                                                 +'<td></td>'
                                                 +'<td></td>'
-                                                +'<td><input type="button" value="Aceptar Contratación" name="btn_contactar" class="btn btn-success" onClick="contactar('+contador+')"></td>'
-                                            +'</tr>'                                            
+                                                +'<td><input type="button" value="Enviar Propuesta" name="btn_contactar" class="btnContactar" onClick="contactar('+contador+')"></td>'
+                                            +'</tr>'
                                         +'</tbody>'
                                     +'</table>'
                                 +'</div><br><br>'
                             +'</div><br></div>';
-                            datosList.push([contador,fec,value[1],nombreCategoria.value,txtLugar.value,txtFuncion.value,disp,transp,precioCat,importe,comision,iva,total]);
+                            datosList.push([contador,fec,value[1],nombreCategoria.value,txtLugar.value,txtFuncion.value,disp,transp,precioCat,importe,comision,iva,total,totalDol]);
                             contador++;
         contenedorCandidatos.innerHTML += base;
         });
@@ -592,19 +838,20 @@ function contactarCandidato(id){
         .then(function (response) {
                mostrarContactar(response.data);
         }).catch(function (error) {
-              alertify.error(error.message);
-              alertify.error('Ocurrio un error interno al intentar filtrar. Por favor intente mas tarde.');
+            alertify.set('notifier','position', 'top-right');
+            alertify.error(error.message);
+            alertify.error('Ocurrio un error interno al intentar filtrar. Por favor intente mas tarde.');
         })
 }
 
 function contactar(pos){
     posActual=pos;
-    if(slTipoFacturacion.value=="edcr"){
+    /*if(slTipoFacturacion.value=="edcr"){
         contenedorCotizacion.setAttribute('hidden', true);
         btn_cancelarCotizacion.setAttribute('hidden',true);
         btn_atrasPago.removeAttribute('hidden');
         contenedorPago.removeAttribute('hidden');
-    }else
+    }else*/
         contactar2();
 }
 
@@ -613,19 +860,26 @@ function contactar2(){
     var form = new FormData();
     var arrayCorreos = [];
     var arrayNombres = [];
+    var arrayCodigos = [];
     for(var cr=0; cr<correosDestinos.length; cr++){
         if(correosDestinos[cr][1]==pos){
             arrayCorreos.push(correosDestinos[cr][0]);
             arrayNombres.push(correosDestinos[cr][2]);
+            arrayCodigos.push(correosDestinos[cr][3])
         }
     }
+    if(slTipoFacturacion.value=="edcr")
+       form.append('correoedcr',correoedcr.value);
 
     if(arrayCorreos.length>0)
        form.append('correos',arrayCorreos);
     if(arrayNombres.length>0)
        form.append('nombres',arrayNombres);
+    if(arrayCodigos.length>0)
+       form.append('codigos',arrayCodigos);
     
     form.append('numero',pos);
+    form.append('usuarioedcr',usuarioEDCRAEnviar);
     var fech="";
     var cant="1";
     var nombreCat="";
@@ -638,6 +892,7 @@ function contactar2(){
     var comsion="";
     var iva2="";
     var total2="";
+    var totalDol2="";
     for(var d=0; d<datosList.length; d++){
         if(datosList[d][0]==pos){            
             fech=datosList[d][1];
@@ -652,11 +907,12 @@ function contactar2(){
             comsion=datosList[d][10];
             iva2=datosList[d][11];
             total2=datosList[d][12];
+            totalDol2=datosList[d][13];
             break;
         }
     }
     
-    form.append('fecha',fech);  
+    form.append('fecha',fech.toString());  
     form.append('cant',cant.toString());
     form.append('nombreCat',nombreCat);
     form.append('lugar',lugar!=null?lugar:'');
@@ -669,12 +925,20 @@ function contactar2(){
     
     form.append('iva2',iva2.toString());
     form.append('total2',total2.toString());
-  
+    form.append('totalDol',totalDol2.toString());
+    form.append('fechaEv',dtFechaEvento.value.toString());
+    form.append('horaEv',tmHoraEvento.value.toString());
+    form.append('idCategoria',idCategoria.value.toString());
+    form.append('idEmpresa',idEmpresa.value.toString());
+    form.append('simbolo',simbolo);
+
     axios.post('contactar', form)
         .then(function (response) {
+            alertify.set('notifier','position', 'top-right');
             alertify.success(response.data);
         }).catch(function (error) {
-              alertify.error('Ocurrio un error interno al enviar los correos. Por favor intente mas tarde.');
+            alertify.set('notifier','position', 'top-right');
+            alertify.error('Ocurrio un error interno al enviar los correos. Por favor intente mas tarde.');
     })
 }
 
@@ -710,6 +974,15 @@ function volverPerfil(){
     btn_atrasPerfil.setAttribute('hidden', true);
     contenedorCotizacion.removeAttribute('hidden');
     btn_cancelarCotizacion.removeAttribute('hidden');
+
+    var contain = document.getElementsByClassName('container-fluid')[0];
+    contain.style.background="#000000";
+    var contentWrapper = document.getElementsByClassName('content-wrapper')[0];
+    contentWrapper.style.background="#000000";    
+    var fondoCotizaciones = document.getElementById('fondoCotizaciones');
+    fondoCotizaciones.style.background="#000000";
+    var fondoCotizaciones2 = document.getElementById('fondoCotizaciones2');
+    fondoCotizaciones2.style.background="#000000";
 }
 
 function volverPago(){
@@ -722,6 +995,16 @@ function volverPago(){
 function verPerfil(idSLPerf){
     var slPerf =document.getElementById(idSLPerf);
     if(slPerf.value!="0"){
+        var contain = document.getElementsByClassName('container-fluid')[0];    
+        contain.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
+        var contentWrapper = document.getElementsByClassName('content-wrapper')[0];
+        contentWrapper.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
+        var fondoCotizaciones = document.getElementById('fondoCotizaciones');
+        fondoCotizaciones.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";
+        var fondoCotizaciones2 = document.getElementById('fondoCotizaciones2');
+        fondoCotizaciones2.style.background="linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78))";   
+
+
         contenedorCotizacion.setAttribute('hidden', true);
         btn_cancelarCotizacion.setAttribute('hidden',true);
         btn_atrasPerfil.removeAttribute('hidden');
@@ -735,7 +1018,8 @@ function verPerfil(idSLPerf){
                break;
             }
         }        
-        var imagenCliente = cliente['portada']!=null?'<img src='+cliente['portada']+' class="imgPerfil">':'';
+        //var imagenCliente = cliente['portada']!=null?'<img src='+cliente['portada']+' class="imgPerfil">':'';
+
         var nombreCLiente = cliente['nombreCliente']!=null?cliente['nombreCliente']:"";
         var correo = cliente['correo']!=null?cliente['correo']:"";
         var telefono = cliente['telefono']!=null?cliente['telefono']:"";
@@ -773,6 +1057,29 @@ function verPerfil(idSLPerf){
         var equipoSonido = cliente['equipoSonido']!=null?cliente['equipoSonido']:"";
 
         var idCat = idCategoria.value;
+
+        //Lista de perfiles--------------------------------------------
+        var arrayPerfiles = [];
+        for(var pf=0; pf<perfiles.length; pf++){
+            if(perfiles[pf].codigo == slPerf.value){
+                var encontrado = 0;
+                for(var j=0; j<arrayPerfiles.length; j++){
+                    if(perfiles[pf].urlperfil==arrayPerfiles[j]){
+                        encontrado=1;
+                        break;
+                    }
+                }
+                if(encontrado==0)
+                  arrayPerfiles.push(perfiles[pf].urlperfil);         
+            }
+        }
+        perfilesTemp="";
+        for(var p=0; p<arrayPerfiles.length; p++)
+            perfilesTemp+='<img src='+arrayPerfiles[p]+' class="imgPerfil" alt="foto de perfil">';
+        if(arrayPerfiles.length==0)
+            perfilesTemp+='<label class="etiquetasRegistro">Sin fotos de perfil</label><br><br><br>';            
+
+            
         //Lista de áreas de trabajo--------------------------------------------
         var arrayAreasTrabajo = [];
         for(var at=0; at<areasT.length; at++){
@@ -791,9 +1098,9 @@ function verPerfil(idSLPerf){
         areasTrabajo="";
         areasTrabajo+='<table class="table"><tbody>';
         for(var i=0; i<arrayAreasTrabajo.length; i++)
-            areasTrabajo+='<tr><td>'+arrayAreasTrabajo[i]+'</td></tr>';
+            areasTrabajo+='<tr><td class="etiquetasRegistro">'+arrayAreasTrabajo[i]+'</td></tr>';
         if(arrayAreasTrabajo.length==0)
-           areasTrabajo+='<tr><td>Ninguna</td></tr>';        
+           areasTrabajo+='<tr><td class="etiquetasRegistro">Ninguna</td></tr>';        
         areasTrabajo+='</tbody></table>';
         //Lista de deportes-----------------------------------------------------
         var deportesTemp = cliente['deportes']!=null?cliente['deportes']:"";
@@ -801,10 +1108,10 @@ function verPerfil(idSLPerf){
         var deportes='<table class="table"><tbody>';
         for(var s=0; s<deportesSplit.length; s++){
             if(deportesSplit[s].trim()!="")
-                deportes+='<tr><td>'+deportesSplit[s]+'</td></tr>';
+                deportes+='<tr><td class="etiquetasRegistro">'+deportesSplit[s]+'</td></tr>';
         }
         if(deportesSplit=="")
-            deportes+='<tr><td>Ninguno</td></tr>';
+            deportes+='<tr><td class="etiquetasRegistro">Ninguno</td></tr>';
         deportes+='</tbody></table>';
         //Lista de equipo--------------------------------------------------
         var equiposTemp = cliente['musica']!=null?cliente['musica']:"";
@@ -812,10 +1119,10 @@ function verPerfil(idSLPerf){
         var equipos='<table class="table"><tbody>';
         for(var s=0; s<equiposSplit.length; s++){
             if(equiposSplit[s].trim()!="")
-               equipos+='<tr><td>'+equiposSplit[s]+'</td></tr>';
+               equipos+='<tr><td class="etiquetasRegistro">'+equiposSplit[s]+'</td></tr>';
         }
         if(equiposSplit=="")
-            equipos+='<tr><td>Ninguno</td></tr>';
+            equipos+='<tr><td class="etiquetasRegistro">Ninguno</td></tr>';
         equipos+='</tbody></table>';
         //Lista de géneros musicales
         var genMusicalesTemp = cliente['generosMusicales']!=null?cliente['generosMusicales']:"";//generosMusicales
@@ -823,10 +1130,10 @@ function verPerfil(idSLPerf){
         var genMusicales='<table class="table"><tbody>';
         for(var s=0; s<genMusicalesSplit.length; s++){
             if(genMusicalesSplit[s].trim()!="")
-                genMusicales+='<tr><td>'+genMusicalesSplit[s]+'</td></tr>';
+                genMusicales+='<tr><td class="etiquetasRegistro">'+genMusicalesSplit[s]+'</td></tr>';
         }
         if(genMusicalesSplit=="")
-            genMusicales+='<tr><td>Ninguno</td></tr>';
+            genMusicales+='<tr><td class="etiquetasRegistro">Ninguno</td></tr>';
         genMusicales+='</tbody></table>';
         //Lista de géneros musicales
         var musicasTemp = cliente['musica']!=null?cliente['musica']:"";
@@ -834,90 +1141,81 @@ function verPerfil(idSLPerf){
         var musicas='<table class="table"><tbody>';
         for(var s=0; s<musicasSplit.length; s++){
             if(musicasSplit[s].trim()!="")
-                musicas+='<tr><td>'+musicasSplit[s]+'</td></tr>';
+                musicas+='<tr><td class="etiquetasRegistro">'+musicasSplit[s]+'</td></tr>';
         }
         if(musicasSplit=="")
-            musicas+='<tr><td>Ninguno</td></tr>';
+            musicas+='<tr><td class="etiquetasRegistro">Ninguno</td></tr>';
         musicas+='</tbody></table>';
 
-        var dd="";
-
-        contenedorPerfil.innerHTML+='<div class="input-group mt-4">'
-                                        +'<div class="contenedorImgPerfil">';
-                                            contenedorPerfil.innerHTML+=imagenCliente;//'<img src='+cliente['portada']+' class="imgPerfil">'
-                                            contenedorPerfil.innerHTML+='</div>'
-                                    +'</div><br>'
+        contenedorPerfil.innerHTML+='<div class="contenedorImgPerfil">'
+                                            +perfilesTemp
+                                    +'</div>'
                                     +'<table class="table">'
                                         +'<tbody>'
-                                            +'<tr><td><label>Nombre: </label></td><td>'+nombreCLiente+'</td></tr>'
-                                            +'<tr><td><label>Correo: </label></td><td>'+correo+'</td></tr>'
-                                            +'<tr><td><label>Teléfono: </label></td><td>'+telefono+'</td></tr>'
-                                            +'<tr><td><label>Transporte: </label></td><td>'+transporte+'</td></tr>'
-                                            +'<tr><td><label>Experiencia: </label></td><td>'+experiencia+'</td></tr>'
-                                            +'<tr><td><label>Disponibilidad: </label></td><td>'+disponibilidad+'</td></tr>'
-                                            +'<tr><td><label>Factura Electronica: </label></td><td>'+facturaelectronica+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Nombre: </label></td><td class="etiquetasRegistro">'+nombreCLiente+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Correo: </label></td><td class="etiquetasRegistro">'+correo+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Teléfono: </label></td><td class="etiquetasRegistro">'+telefono+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Transporte: </label></td><td class="etiquetasRegistro">'+transporte+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Experiencia: </label></td><td class="etiquetasRegistro">'+experiencia+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Disponibilidad: </label></td><td class="etiquetasRegistro">'+disponibilidad+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Factura Electronica: </label></td><td class="etiquetasRegistro">'+facturaelectronica+'</td></tr>'
                                         +'</tbody>'
                                     +'</table><hr>';
-                                    (idCat!=7 && idCat!=12)?contenedorPerfil.innerHTML+='<label>Datos de la Categoría</label>':'';
+                                    (idCat!=7 && idCat!=12)?contenedorPerfil.innerHTML+='<label class="tituloBlanco">Datos de la Categoría</label>':'';
                                     (idCat==1 || idCat==2 || idCat==3)?(contenedorPerfil.innerHTML+='<table class="table">'
                                     +'<tbody>'
-                                        +'<tr><td><label>Color de Ojos </label></td><td>'+colorOjos+'</td></tr>'
-                                        +'<tr><td><label>Medidas: </label></td><td>'+medidas+'</td></tr>'
-                                        +'<tr><td><label>Calzado: </label></td><td>'+calzado+'</td></tr>'
-                                        +'<tr><td><label>Peso: </label></td><td>'+peso+'</td></tr>'
-                                        +'<tr><td><label>Altura: </label></td><td>'+altura+'</td></tr>'
-                                        +'<tr><td><label>Grado Académico: </label></td><td>'+grado_academico+'</td></tr>'
-                                        +'<tr><td><label>Tipo de Cabello: </label></td><td>'+cabello+'</td></tr>'
-                                        +'<tr><td><label>Idioma: </label></td><td>'+idioma+'</td></tr>'
-                                        +'<tr><td><label>Uniforme: </label></td><td>'+uniforme+'</td></tr>'
-                                        +'<tr><td><label>Frenillos: </label></td><td>'+frenillos+'</td></tr>'
-                                        +'<tr><td><label>Tattos Visibles: </label></td><td>'+tattos+'</td></tr>'
-                                        +'<tr><td><label>Pasaporte al día: </label></td><td>'+pasaporte+'</td></tr>'
-                                        +'<tr><td><label>Licencia al día: </label></td><td>'+licencia+'</td></tr>'
-                                        +'<tr><td><label>Dirección: </label></td><td>'+direccion+'</td></tr>'
-                                        +'<tr><td><label>Cursos: </label></td><td>'+cursos+'</td></tr>'
-                                        +'<tr><td><label>Sobre mí: </label></td><td>'+sobremi+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Color de Ojos </label></td><td class="etiquetasRegistro">'+colorOjos+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Medidas: </label></td><td class="etiquetasRegistro">'+medidas+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Calzado: </label></td><td class="etiquetasRegistro">'+calzado+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Peso: </label></td><td class="etiquetasRegistro">'+peso+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Altura: </label></td><td class="etiquetasRegistro">'+altura+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Grado Académico: </label></td><td class="etiquetasRegistro">'+grado_academico+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Tipo de Cabello: </label></td><td class="etiquetasRegistro">'+cabello+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Idioma: </label></td><td class="etiquetasRegistro">'+idioma+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Uniforme: </label></td><td class="etiquetasRegistro">'+uniforme+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Frenillos: </label></td><td class="etiquetasRegistro">'+frenillos+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Tattos Visibles: </label></td><td class="etiquetasRegistro">'+tattos+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Pasaporte al día: </label></td><td class="etiquetasRegistro">'+pasaporte+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Licencia al día: </label></td><td class="etiquetasRegistro">'+licencia+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Dirección: </label></td><td class="etiquetasRegistro">'+direccion+'</td></tr>'
+                                        +'<tr><td><label class="etiquetasRegistro">Cursos: </label></td><td class="etiquetasRegistro">'+cursos+'</td></tr>'
+                                        +'<tr><td class="etiquetasRegistro"><label>Sobre mí: </label></td><td class="etiquetasRegistro">'+sobremi+'</td></tr>'
                                     +'</tbody>'
                                     +'</table><br>'):'';
                                     (idCat==5)?(contenedorPerfil.innerHTML+='<table class="table">'
                                         +'<tbody>'
-                                            +'<tr><td><label>Compositor: </label></td><td>'+compositor+'</td></tr>'
-                                            +'<tr><td><label>Fuerte: </label></td><td>'+miFuerte+'</td></tr>'
-                                            +'<tr><td><label>Instrumento Principal: </label></td><td>'+instPrincipal+'</td></tr>'
-                                            +'<tr><td><label>Instrumento Secundario: </label></td><td>'+instSecundario+'</td></tr>'
-                                            +'<tr><td><label>Demos: </label></td><td>'+demos+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Compositor: </label></td><td class="etiquetasRegistro">'+compositor+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Fuerte: </label></td><td class="etiquetasRegistro">'+miFuerte+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Instrumento Principal: </label></td><td class="etiquetasRegistro">'+instPrincipal+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Instrumento Secundario: </label></td><td class="etiquetasRegistro">'+instSecundario+'</td></tr>'
+                                            +'<tr><td><label class="etiquetasRegistro">Demos: </label></td><td class="etiquetasRegistro">'+demos+'</td></tr>'
                                         + '</tbody>'
                                     +'</table><br>'):'';
                                     (idCat==6)?(contenedorPerfil.innerHTML+='<table class="table">'
                                         +'<tbody>'
-                                                +'<tr><td><label>Equipo Propio: </label></td><td>'+equipoPropio+'</td></tr>'
-                                                +'<tr><td><label>Luces: </label></td><td>'+luces+'</td></tr>'
-                                                +'<tr><td><label>Equipo de Sonido: </label></td><td>'+equipoSonido+'</td></tr>'
-                                                +'<tr><td><label>Demos: </label></td><td>'+demos+'</td></tr>'
+                                                +'<tr><td><label class="etiquetasRegistro">Equipo Propio: </label></td><td class="etiquetasRegistro">'+equipoPropio+'</td></tr>'
+                                                +'<tr><td><label class="etiquetasRegistro">Luces: </label></td><td class="etiquetasRegistro">'+luces+'</td></tr>'
+                                                +'<tr><td><label class="etiquetasRegistro">Equipo de Sonido: </label></td><td class="etiquetasRegistro">'+equipoSonido+'</td></tr>'
+                                                +'<tr><td><label class="etiquetasRegistro">Demos: </label></td><td class="etiquetasRegistro">'+demos+'</td></tr>'
                                         + '</tbody>'
                                     +'</table><br>'):'';
                                     contenedorPerfil.innerHTML+='<br>'
-                                    +'<h5>Áreas de trabajo</h5>';                    
+                                    +'<h5 class="tituloBlanco">Áreas de trabajo</h5>';                    
                                     contenedorPerfil.innerHTML+=areasTrabajo;                            
-                    (idCat==1 || idCat==2 || idCat==3)? contenedorPerfil.innerHTML+= '<br><h5>Deportes que practica</h5>':'';
+                    (idCat==1 || idCat==2 || idCat==3)? contenedorPerfil.innerHTML+= '<br><h5 class="tituloBlanco">Deportes que practica</h5>':'';
                     (idCat==1 || idCat==2 || idCat==3)?contenedorPerfil.innerHTML+=deportes:'';
                     
-                    (idCat==4 || idCat==7)? contenedorPerfil.innerHTML+= '<br><h5>Equipo con el que cuenta</h5>':'';
+                    (idCat==4 || idCat==7)? contenedorPerfil.innerHTML+= '<br><h5 class="tituloBlanco">Equipo con el que cuenta</h5>':'';
                     (idCat==4 || idCat==7)? contenedorPerfil.innerHTML+=equipos:'';
                     
 
-                    (idCat==6)? contenedorPerfil.innerHTML+= '<br><h5>Géneros Musicales con los que cuenta</h5>':'';
+                    (idCat==6)? contenedorPerfil.innerHTML+= '<br><h5 class="tituloBlanco">Géneros Musicales con los que cuenta</h5>':'';
                     (idCat==6)?contenedorPerfil.innerHTML+=genMusicales:'';//DJ generosMusicales
 
-                    (idCat==5)? contenedorPerfil.innerHTML+= '<br><h5>Géneros Musicales con los que cuenta según filtro</h5>':'';
+                    (idCat==5)? contenedorPerfil.innerHTML+= '<br><h5 class="tituloBlanco">Géneros Musicales con los que cuenta según filtro</h5>':'';
                     (idCat==5)?contenedorPerfil.innerHTML+=musicas:'';//Musicos musica
                                                                               
     }
 }
-/**2h
- * 1h
- * 1h
- * 48m
- * 
- * 
- *  *  * */
+/* 
+ * * */

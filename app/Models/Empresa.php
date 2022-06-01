@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RecuperarContra;
 use App\Mail\Contrato;
+use App\Mail\ContratoEdcr;
+use App\Mail\NotificacionEmpresa;
+use App\Mail\NotificacionEmpresaCandidato;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\URL;
 
 class Empresa extends Model
 {
@@ -78,7 +84,7 @@ class Empresa extends Model
             $_SESSION['empresa'] = $emp;
             if ($emp->cambioContra == 1)
                 return 'cambiarcontra'; //bien logeado, pero toca cambiar contra
-            if($emp->pagoComision==0)
+            if($emp->pagoComision==0)//0)
                return 'pagoComision';
             
             return 'exito';   
@@ -105,6 +111,7 @@ class Empresa extends Model
     public static function recuperarContra($usuario){
         if (DB::table('tbempresas')->where('usuario', $usuario)->exists()) {
             $contra =  self::generarPass();
+            echo "<script>console.log('Console: " . $contra . "' );</script>";
             DB::table('tbempresas')->where('usuario', $usuario)->update(['contrasena' => Hash::make($contra), 'cambioContra' =>  1]);
 
             $emp = DB::table('tbempresas')->where('usuario', $usuario)->first();
@@ -118,13 +125,16 @@ class Empresa extends Model
         }
     }
 
-    public static function contrato(){        
-        if(isset($_POST['correos']) && isset($_POST['nombres'])){            
+    public static function contrato(){
+        if(isset($_POST['correos']) && isset($_POST['nombres'])){
             $correosRecibidos = $_POST['correos'];
             $correos = explode(",",$correosRecibidos);
 
             $nombresRecibidos = $_POST['nombres'];
             $nombres = explode(",",$nombresRecibidos);
+
+            $codigosRecibidos = $_POST['codigos'];
+            $codigos = explode(",",$codigosRecibidos);
 
             $numero =$_POST['numero'];
             $fecha= $_POST['fecha'];     
@@ -139,14 +149,112 @@ class Empresa extends Model
             $comsion = $_POST['comsion'];
             $iva=$_POST['iva2'];
             $totl = $_POST['total2'];
+            $totalDol=$_POST['totalDol'];
+
+            $usuEDCR = $_POST['usuarioedcr'];
+            $fechaEv = $_POST['fechaEv'];
+            $horaEv = $_POST['horaEv'];
+
+            $idCategoria = $_POST['idCategoria'];
+            $idEmpresa = $_POST['idEmpresa'];
+            $simbolo = $_POST['simbolo'];
+            if($simbolo=="dolar")
+              $simboloVisual = "$";//"dolar";
+            else if($simbolo=="colon")
+              $simboloVisual="₡";//"colon";
+
+            $usuarioEDCRDEfinitivo = "";
+            if($usuEDCR=="EDCR")
+               $usuarioEDCRDEfinitivo = $usuEDCR;
+            else
+              $usuarioEDCRDEfinitivo = $nombresRecibidos;              
             
             $msj="";
-            
-            for($i=0; $i<sizeof($correos); $i++){
-                if (DB::table('tbclientes')->where('correo', $correos[$i])->exists())
-                    Mail::to($correos[$i])->send(new Contrato($nombres[$i],$nombresRecibidos,$numero,$correosRecibidos,$fecha,$cant,$nombreCat,$lugar,$funcion,$disp2,$transp,$precioCt,$imprte,$iva,$totl,$comsion));
-                else
-                    $msj+= "No existe cuenta asociada al correo "+$correo;
+            if($usuEDCR=="EDCR"){
+                $correoedcr = $_POST['correoedcr'];
+                if (DB::table('tbparametros')->where('valor', $correoedcr)->exists()){
+                    for($i=0; $i<sizeof($correos); $i++){
+                        if (DB::table('tbclientes')->where('correo', $correos[$i])->exists()){
+                            $idCotizacion = DB::table('tbcotizacionesenviadas')
+                                        ->insertGetId(['correo'=>$correos[$i],
+                                                  'cliente'=>$codigos[$i],
+                                                  'nombre'=>$nombres[$i],
+                                                  'nombres'=>$nombresRecibidos,
+                                                  'numero'=>$numero,
+                                                  'correos'=>$correosRecibidos,
+                                                  'fechacotizacion'=>$fecha,
+                                                  'cantidad'=>$cant,
+                                                  'categoria'=>$idCategoria,
+                                                  'empresa'=>$idEmpresa,
+                                                  'nombrecategoria'=>$nombreCat,
+                                                  'lugar'=>$lugar,
+                                                  'funcion'=>$funcion,
+                                                  'disponibilidad'=>$disp2,
+                                                  'transporte'=>$transp,
+                                                  'preciocategoria'=>$precioCt,
+                                                  'importe'=>$imprte,
+                                                  'iva'=>$iva,
+                                                  'total'=>$totl,
+                                                  'comision'=>$comsion,
+                                                  'fechaevento'=>$fechaEv,
+                                                  'horaevento'=>$horaEv,
+                                                  'usuarioedcr'=>$usuarioEDCRDEfinitivo,
+                                                  'correoedcr'=>$correoedcr,
+                                                  'simbolo'=>$simbolo,
+                                                  'totaldolar'=>$totalDol]);
+
+                            if (is_numeric($idCotizacion)) {//$url = URL::signedRoute('contratar',['codigo'=>$codigos[$i],'categoria'=>$idCategoria,'cotizacion'=>$idCotizacion,'empresa'=>$idEmpresa]);
+                                $url = URL::temporarySignedRoute('contratar',now()->addMinutes(15),[]);
+                                Mail::to($correoedcr)->send(new ContratoEdcr($correos[$i],$usuarioEDCRDEfinitivo,$correoedcr,$numero,$fecha,$cant,$nombreCat,$lugar,
+                                                                             $funcion,$disp2,$transp,$precioCt,$imprte,$iva,$totl,$comsion,$fechaEv,$horaEv,$url,
+                                                                             $codigos[$i],$idCategoria,$idCotizacion,$idEmpresa,$simboloVisual));
+                            }else
+                                $msj.="La cotización del cliente con correo: ".$correo[$i]." no se envió al correo ".$correoedcr;
+                        }else
+                            $msj.= "No existe cuenta asociada al correo ".$correo[$i];
+                    }
+                }else
+                  $msj.= "El correo ".$correoedcr." no se encuentra registrado";
+            }else{
+                for($i=0; $i<sizeof($correos); $i++){
+                    if (DB::table('tbclientes')->where('correo', $correos[$i])->exists()){
+                        $idCotizacion = DB::table('tbcotizacionesenviadas')
+                                            ->insertGetId(['correo'=>$correos[$i],
+                                                      'cliente'=>$codigos[$i],
+                                                      'nombre'=>$nombres[$i],
+                                                      'nombres'=>$nombresRecibidos,
+                                                      'numero'=>$numero,
+                                                      'correos'=>$correosRecibidos,
+                                                      'fechacotizacion'=>$fecha,
+                                                      'cantidad'=>$cant,
+                                                      'categoria'=>$idCategoria,
+                                                      'empresa'=>$idEmpresa,
+                                                      'nombrecategoria'=>$nombreCat,
+                                                      'lugar'=>$lugar,
+                                                      'funcion'=>$funcion,
+                                                      'disponibilidad'=>$disp2,
+                                                      'transporte'=>$transp,
+                                                      'preciocategoria'=>$precioCt,
+                                                      'importe'=>$imprte,
+                                                      'iva'=>$iva,
+                                                      'total'=>$totl,
+                                                      'comision'=>$comsion,
+                                                      'fechaevento'=>$fechaEv,
+                                                      'horaevento'=>$horaEv,
+                                                      'usuarioedcr'=>$usuarioEDCRDEfinitivo,
+                                                      'simbolo'=>$simbolo,
+                                                      'totaldolar'=>$totalDol]);
+
+                        if (is_numeric($idCotizacion)) {//$url = URL::temporarySignedRoute('contratar',now()->addMinutes(30),['codigo'=>$codigos[$i],'categoria'=>$idCategoria,'cotizacion'=>$idCotizacion,'empresa'=>$idEmpresa]);
+                            $url = URL::temporarySignedRoute('contratar2',now()->addMinutes(15),[]);
+                            Mail::to($correos[$i])->send(new Contrato($nombres[$i],$nombresRecibidos,$numero,$correosRecibidos,$fecha,$cant,$nombreCat,$lugar,$funcion,
+                                                                      $disp2,$transp,$precioCt,$imprte,$iva,$totl,$comsion,$fechaEv,$horaEv,$usuarioEDCRDEfinitivo,$url,
+                                                                      $codigos[$i],$idCategoria,$idCotizacion,$idEmpresa,$simboloVisual));
+                        }else
+                            $msj.="No se envió la cotización al correo ".$correo[$i];
+                    }else
+                        $msj.= "No existe cuenta asociada al correo ".$correo[$i];
+                }
             }
             if($msj=="")
                return "Se ha enviado un correo de notificación a los correos asociados"; //'exito';
@@ -154,7 +262,65 @@ class Empresa extends Model
                 return $msj; 
         }else 
           return "Ningún correo enviado";
+    }
+
+    public static function notificarEmpresa(){
+        $correoEmpresa = $_POST['correoEmpresa'];
+        $nombreCliente =$_POST['nombreCliente'];
+        $nombreEvento= $_POST['nombreEvento'];     
+        $fechaEvento=$_POST['fechaEvento'];
+        $horaEvento = $_POST['horaEvento'];
+        $nombreLugar=$_POST['nombreLugar'];
+        $nombreCategoria=$_POST['nombreCategoria'];
+
+        $empresa = $_POST['empresa'];
+        $categoria = $_POST['categoria'];
+        $cliente = $_POST['cliente'];
+        $cotizacion = $_POST['cotizacion'];
+            
+        $msj="";
+        $url = URL::signedRoute('realizarPago',[]);
+        if (DB::table('tbempresas')->where('usuario', $correoEmpresa)->exists()){            
+            Mail::to($correoEmpresa)->send(new NotificacionEmpresa($nombreCliente,$nombreEvento,$fechaEvento,$horaEvento,$nombreLugar,$nombreCategoria,$url,
+                                                                    $empresa,$categoria,$cliente,$cotizacion));                    
+        }else
+            $msj.= "No existe cuenta asociada al correo ".$correoEmpresa;
+            
+        if($msj=="")
+            return "Se ha enviado un correo de notificación a los correos asociados";
+        else
+            return $msj;      
+    }
+    
+    public static function notificarEmpresaXCandidato(){
+        $correoEmpresa = $_POST['correoEmpresa'];
+        $nombreCliente =$_POST['nombreCliente'];
+        $nombreEvento= $_POST['nombreEvento'];     
+        $fechaEvento=$_POST['fechaEvento'];
+        $horaEvento = $_POST['horaEvento'];
+        $nombreLugar=$_POST['nombreLugar'];
+        $nombreCategoria=$_POST['nombreCategoria'];
+
+        $empresa = $_POST['empresa'];
+        $categoria = $_POST['categoria'];
+        $cliente = $_POST['cliente'];
+        $cotizacion = $_POST['cotizacion'];
+            
+        $msj="";
+        $url = URL::signedRoute('realizarPago2',[]);
+        if (DB::table('tbempresas')->where('usuario', $correoEmpresa)->exists()){            
+            Mail::to($correoEmpresa)->send(new NotificacionEmpresaCandidato($nombreCliente,$nombreEvento,$fechaEvento,$horaEvento,$nombreLugar,$nombreCategoria,
+            $url, $empresa,$categoria,$cliente,$cotizacion));
+        }else
+            $msj.= "No existe cuenta asociada al correo ".$correoEmpresa;
+            
+        if($msj=="")
+            return "Se ha enviado un correo de notificación a los correos asociados";
+        else
+            return $msj;      
     }    
+
+    
 
     private static function generarPass(){
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
@@ -182,7 +348,7 @@ class Empresa extends Model
         $paisComprador = "";
         if($_POST['paisComprador']==null || !isset($_POST['paisComprador']))
             $paisComprador= "";
-        $idPago = DB::table('tbpagosempresaspaypal')->insertGetId(['afiliado'=>$_POST['afiliado'],'cliente'=>$_POST['cliente'],/*'idorden'=>$_POST['idOrden'],*/
+        $idPago = DB::table('tbpagosempresaspaypal')->insertGetId(['afiliado'=>$_POST['afiliado'],'cliente'=>$_POST['cliente'],
                            'paypalid'=>$_POST['paypalId'],'creacion'=>$_POST['creacion'],'edicion'=>$_POST['edicion'],
                            'intent'=>$_POST['intent'],'estado'=>$_POST['estado'],'idcomprador'=>$_POST['idComprador'],
                            'emailcomp'=>$_POST['emailComprador'],'paiscomp'=>$paisComprador,'nombrecomp'=>$_POST['nombreComprador'],
@@ -191,7 +357,8 @@ class Empresa extends Model
                            'dirdireccion'=>$_POST['dirDireccion'],'dirpostal'=>$_POST['dirPostal'],'dirpais'=>$_POST['dirPais'],
                            'pagoestado'=>$_POST['pagoEstado'],'pagoid'=>$_POST['pagoId'],'pagocapture'=>$_POST['pagoCapture'],
                            'pagocreacion'=>$_POST['pagoCreacion'],'pagoedicion'=>$_POST['pagoEdicion'],'pagomonto'=>$_POST['pagoValor'],
-                           'pagomoneda'=>$_POST['pagoMoneda'],'tipo'=>$_POST['tipo']]);
+                           'pagomoneda'=>$_POST['pagoMoneda'],'tipo'=>$_POST['tipo'],'empresa'=>$_POST['codigoUsuario'],
+                           'telefono'=>$_POST['telefono'],'adicional'=>$_POST['adicional']]);
         if (is_numeric($idPago)){
             $resultado2 = DB::table('tbempresas')->where('id',$_POST['codigoUsuario'])->update(['pagoComision' => 1]);
             if ($resultado2)
@@ -207,8 +374,15 @@ class Empresa extends Model
     public static function guardarPago2(){
         $paisComprador = "";
         if($_POST['paisComprador']==null || !isset($_POST['paisComprador']))
-            $paisComprador= "";       
-        $resultado = DB::table('tbpagosempresaspaypal')->insert(['afiliado'=>$_POST['afiliado'],'cliente'=>$_POST['cliente'],/*'idorden'=>$_POST['idOrden'],*/
+            $paisComprador= "";
+        
+        $pagosCot =  DB::table('tbpagoscotizacionespaypal')
+                            ->where('cotizacion',$_POST['cotizacion'])
+                            ->get();  
+        if(count($pagosCot)>0)
+            return 'preregistrado';
+        else{  
+            $resultado = DB::table('tbpagoscotizacionespaypal')->insert(['afiliado'=>$_POST['afiliado'],'cliente'=>$_POST['cliente'],
                            'paypalid'=>$_POST['paypalId'],'creacion'=>$_POST['creacion'],'edicion'=>$_POST['edicion'],
                            'intent'=>$_POST['intent'],'estado'=>$_POST['estado'],'idcomprador'=>$_POST['idComprador'],
                            'emailcomp'=>$_POST['emailComprador'],'paiscomp'=>$paisComprador,'nombrecomp'=>$_POST['nombreComprador'],
@@ -217,12 +391,26 @@ class Empresa extends Model
                            'dirdireccion'=>$_POST['dirDireccion'],'dirpostal'=>$_POST['dirPostal'],'dirpais'=>$_POST['dirPais'],
                            'pagoestado'=>$_POST['pagoEstado'],'pagoid'=>$_POST['pagoId'],'pagocapture'=>$_POST['pagoCapture'],
                            'pagocreacion'=>$_POST['pagoCreacion'],'pagoedicion'=>$_POST['pagoEdicion'],'pagomonto'=>$_POST['pagoValor'],
-                           'pagomoneda'=>$_POST['pagoMoneda'],'tipo'=>$_POST['tipo'],'empresa'=>$_POST['codigoUsuario'],'categoria'=>$_POST['categoria']]);
-        if ($resultado)
-            return 'Pago realizado exitosamente';
-        else
-            return 'Error al registrar el pago. Por favor intente mas tarde.';        
+                           'pagomoneda'=>$_POST['pagoMoneda'],'tipo'=>$_POST['tipo'],'empresa'=>$_POST['codigoUsuario'],'categoria'=>$_POST['categoria'],
+                           'cotizacion'=>$_POST['cotizacion'],'candidato'=>$_POST['candidato'],
+                           'telefono'=>$_POST['telefono'],'adicional'=>$_POST['adicional']]);
+            if ($resultado)
+                return 'Pago realizado exitosamente';
+            else
+                return 'Error al registrar el pago. Por favor intente mas tarde.';
+        }
     }
-    //id de la Empresa, 
     
+    public static function pagoDepositoRegistro(){
+        $resultado = DB::table('tbdepositos')->insert(['empresa'=>$_POST['empresa'],'telefono'=>$_POST['telefono'],
+                                                       'direccion'=>$_POST['direccion'],'comprobante'=>$_POST['comprobante'],
+                                                       'tipo'=>$_POST['tipo']]);
+
+        DB::table('tbempresas')->where('id', $_POST['empresa'])->update(['pagoComision' => 1]);
+
+        if ($resultado)
+            return 'Exito';
+        else
+            return 'Error';
+    }
 }

@@ -1,29 +1,29 @@
 .titulo{
    color: white; 
 }
-.baseCategorias{
-    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+.baseCategorias{/*background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);*/
     display: block;
     align-items: center;
     justify-content: center;
     padding-left: 20%;
 }
 .baseCategoria{
-    background-color: rgb(187, 187, 187);
+    background:#455A64; /*rgb(187, 187, 187);*/
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-top: 1%;
-    padding-bottom: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
     width: 70%;
 }
 
 .categoria{
-    background-color: rgb(14, 28, 28);
-    width: 80%;
+    /*background: rgb(14, 28, 28);*/
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
+    width: 99%;
     color: white;
-    border-radius: 20px;
+    border-radius: 15px;
     text-align: center;
 }
 

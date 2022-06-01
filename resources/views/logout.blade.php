@@ -12,7 +12,7 @@
     ?>
 </head>
 
-<body style="background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);">
+<body style="background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));">
 
     <div id="contenedorcerro">
         <p id="cerrosession"> {{$mensaje}}</p>

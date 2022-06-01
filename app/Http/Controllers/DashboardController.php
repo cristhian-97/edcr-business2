@@ -12,6 +12,10 @@ class DashboardController extends Controller
            return view('inicio');
     }
 
+    public static function home(){
+        return redirect()->back();
+    }
+
     public static function estaLogeado(){
         if (session_status() == PHP_SESSION_NONE)
             session_start();

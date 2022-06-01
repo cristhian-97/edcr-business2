@@ -11,42 +11,23 @@
     <script src="{{ url('/js/alertify.min.js') }}"></script>
     <script src="{{url('/js/edcr.js')}}"></script>
     <script src="{{url('/js/login.js')}}"></script>
-    <style>
-        body {
-            background: black;
-            margin: 0;
-            font-family: 'Raleway', sans-serif;
-            justify-content: center;
-        }
-    </style>
 </head>
-<body>
+<body >
     <div id="contenedorTitulo">
-        <label id="titulo">Login</label>
-    </div><br>
-    <div class="centroblanco">
-        <div class="contenedorcentroIzquierda">
-            <div id="contenedorLogo">
-                <img id="logo" src="/img/logo.png">
-            </div>
-        </div>
-        <div class="contenedorcentroderecha">
-            <form method="POST" autocomplete="off">
-                {{csrf_field()}}
+        <label id="titulo">EDCR Business {{$empresa}}</label>
+    </div>
+        <form id="formlogin" method="POST" autocomplete="off">
+            {{csrf_field()}}
+            <div class="centroblanco" style="display: block;"><br>
                 <input type="text" name="usuario" placeholder="Usuario" title="Usuario" class="cajatexto" id="txt_usuario" value="{{ old('usuario') }}">
                 @error('usuario')<p class="error-message errMsg">{{ $message }}</p>@enderror
-                <br><br>
                 <input type="password" name="contrasena" placeholder="**********" title="Contraseña" class="cajatexto" id="txt_password" value="{{ old('contrasena') }}"/>
                 @error('contrasena')<p class="error-message errMsg">{{ $message }}</p>@enderror
-                <br><br>
                 <div>
-                    <input type="button" value="Registrarme" name="btn_registro" class="btnFormat" id="btn_registro2">&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="submit" value="Iniciar Sesión" name="btn_login" class="ml-10 btnFormat" id="btn_login">
-                </div><br>
-                <label class="lblRecuperarContra" id="lbl_RecuperarContra">Olvidé mi contraseña</label>
-                <br><br><br><br><br><br><br>
-            </form>
-        </div>
+                    <input type="submit" value="Acceder" name="btn_login" class="ml-10 btnFormat" id="btn_login">
+                </div>
+            </div>
+        </form>
 </body>
 </html>
 <?php

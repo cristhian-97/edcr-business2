@@ -22,6 +22,9 @@
                 </div>
             </div><br>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
+                 <h1>Cotización no encontrada</h1>
+            </div>
+            <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
                 <div class="col-3">
                     <label style="font-size: 15px;font-weight: bold;">Facturar a</label>
                 </div>
@@ -32,22 +35,20 @@
                     <label style="font-size: 15px;font-weight: bold;">Cotización #</th>
                 </div>
                 <div class="col-2">
-                    <td>{{$numero}}</td>
+                    <td></td>
                 </div>
             </div>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
-                <div class="col-3">
-                   {{$nombres}}
+                <div class="col-3">                   
                 </div>
                 <div class="col-4">
-                     {{$correos}}
                     <br>
                 </div>
                 <div class="col-3">
                     <label style="font-size: 15px;font-weight: bold;">Fecha de la cotización</label>
                 </div>
                 <div class="col-2">
-                    <td>{{$fecha}}</td>
+                    <td></td>
                 </div>
             </div>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4px;margin-top: 4%;">
@@ -55,7 +56,6 @@
                     <label>Usuario EDCR: </label>
                 </div>
                 <div class="col-3">
-                    {{$nombres}}
                 </div>
             </div>
             <br>
@@ -69,29 +69,31 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{$cant}}</td>
+                            <td></td>
                             <td>
-                                <label>Categoría: </label>{{$nombreCat}}<br>
-                                <label>Lugar: </label>{{$lugar}}<br>
-                                <label>Función: </label>{{$funcion}}<br>
-                                <label>Disponibilidad: </label>{{$disp2}}<br>
-                                <label>Transporte: </label>{{$transp}}<br>
+                                <label>Categoría: </label><br>
+                                <label>Lugar: </label><br>
+                                <label>Función: </label><br>
+                                <label>Disponibilidad: </label><br>
+                                <label>Transporte: </label><br>
+                                <label>Fecha del Evento: </label><br>
+                                <label>Hora del Evento: </label><br>
                             </td>
-                            <td>{{$precioCt}}</td>
-                            <td>{{$imprte}}</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td></td><td></td><td>Subtotal</td><td>{{$imprte}}</td>
+                            <td></td><td></td><td>Subtotal</td><td></td>
                         </tr>
                         <tr>
-                            <td></td><td></td><td>Comisión</td><td>{{$comsion}}</td>
+                            <td></td><td></td><td>Comisión</td><td></td>
                         </tr>
                         <tr>
-                            <td></td><td></td><td>Valor Agregado 13.0%</td><td>{{$iva}}</td>
+                            <td></td><td></td><td>Valor Agregado 13.0%</td><td></td>
                         </tr>
                         <tr>
                             <td></td><td></td><td><label style="font-size: 20px;font-weight: bold;">TOTAL</label></td>
-                            <td> <label style="font-size: 20px;font-weight: bold;">  ₡{{$totl}}</label></td>
+                            <td> <label style="font-size: 20px;font-weight: bold;"></label></td>
                         </tr>
                         <tr><td></td><td></td><td></td>
                         </tr>

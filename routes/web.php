@@ -5,6 +5,10 @@ use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClienteController;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Http\Request;
+use App\Models\Categoria;
 
 /*v81V04gl
 |--------------------------------------------------------------------------
@@ -18,16 +22,22 @@ use App\Http\Controllers\DashboardController;
 */
 
 Route::get('/', function () {
+    //return view('logout',['mensaje' => 'Registro Exitoso.', 'dir' => '/']);
     return view('login');
 });
   
 Route::post('/', [EmpresaController::class, 'login']);
+
+Route::post('/cliente3', [ClienteController::class,'loginCandidato2'])->name('cliente3');
 
 Route::get('/registrar', function () {
     return view('registro');
 });
 
 Route::get('/dashboard',[DashboardController::class,'inicio']);
+Route::get('/home',[DashboardController::class,'home']);
+
+Route::get('/aceptarContrato',[ClienteController::class,'aceptarContratacion']);
 
 Route::get('/nolog', function () {
     return view('logout', ['mensaje' => 'Por favor inicie sesión para poder utilizar el sistema.', 'dir' => '/']);
@@ -59,20 +69,54 @@ Route::post('/categoria',[CategoriaController::class, 'mostrarCategoria'])->name
 Route::post('/cotizar',[CategoriaController::class, 'cotizar']);
 
 Route::post('/contactar', [EmpresaController::class, 'contactar']);
+Route::post('/notificarEmpresa', [EmpresaController::class, 'notificarEmpresa']);
+Route::post('/notificarEmpresaXCandidato', [EmpresaController::class, 'notificarEmpresaXCandidato']);
 
 Route::get('/pagoComision', function () {
     session_start();
     $emp = $_SESSION['empresa'];
-    return view('paypal/paypal',['idEmpresa'=>$emp->id]);
+    $comision = Categoria::obtenerPrecioComision();
+    return view('paypal/opcionPago2',['idEmpresa'=>$emp->id,'comision'=>$comision]);
+    //return view('paypal/paypal',['idEmpresa'=>$emp->id,'comision'=>$comision]);
 })->name('pagoComision');
 
-/*Route::get('/pagoComision2', function () {
-    session_start();
-    $emp = $_SESSION['empresa'];
-    return view('paypal/paypal',['idEmpresa'=>$emp->id,'pago'=>30]);
-})->name('pagoComision2');*/
+Route::post('/tipoPago',[EmpresaController::class, 'tipoPago'])->name('tipoPago');
 
 Route::post('/paypal',[EmpresaController::class, 'paypal'])->name('paypal');
 Route::post('/paypal2',[EmpresaController::class, 'paypal2'])->name('paypal2');
+Route::post('/pagoDeposito',[EmpresaController::class, 'pagoDepositoRegistro'])->name('pagoDeposito');
 
 Route::post('/obtenerCliente',[CategoriaController::class, 'obtenerCliente'])->name('obtenerCliente');
+
+//edcr
+Route::post('/contratar',[ClienteController::class,'aceptarContratacion'])->name('contratar')->middleware('signed');
+//candidato
+Route::post('/contratar2',[ClienteController::class,'aceptarContratacion2'])->name('contratar2')->middleware('signed');
+Route::post('/realizarPago',[ClienteController::class,'realizarPago'])->name('realizarPago')->middleware('signed');
+Route::post('/realizarPago2',[ClienteController::class,'realizarPago2'])->name('realizarPago2')->middleware('signed');
+
+Route::get('/contact2',[ClienteController::class,'mostrarContact2'])->name('contact2');
+Route::post('/contact',[ClienteController::class,'contact'])->name('contact');
+Route::post('/aceptarContactar',[ClienteController::class,'aceptarContactar'])->name('aceptarContactar')->middleware('signed');
+
+Route::get('/notificacion',[ClienteController::class, 'conversionPHP']);/*function () {
+    return view('contact2');
+ });*/
+
+
+Route::get('/correo',function (){
+    return view('correos/cambioContra', ['nombreEmpresa'=>'Nueva Empresa','contra'=>'SJSje9']);
+    /*return view('correos/notificacionEmpresa',[
+        'nombreCliente'=>'Cristhian',
+        'nombreEvento'=>'Evento',
+        'fechaEvento'=>'lunes',
+        'horaEvento'=>'4:3',
+        'nombreLugar'=>'nombreLugar',
+        'nombreCategoria'=>'nombreCategoria',
+        'url'=>'hola',
+        'cliente'=>2,
+        'categoria'=>2,
+        'cotizacion'=>2,
+        'empresa'=>2,
+    ]);*/
+});

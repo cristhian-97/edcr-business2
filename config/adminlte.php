@@ -45,12 +45,12 @@ return [
     |
     */
 
-    'logo' => '<b>EDCR</b>Business',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo' => /*'<b>EDCR</b>Business',*/'<b>&nbsp;&nbsp;</b><img style="width:70%;" src="/img/logo.png">',
+    'logo_img' =>'<b></b>',//'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'AdminLTE',
+    'logo_img_alt' => '',
 
     /*
     |--------------------------------------------------------------------------
@@ -237,32 +237,10 @@ return [
             'text' => 'Cotizar',
             'url' => '/categorias'
         ],
-        /*[
-            'text'    => 'Mis cuentas',
-            'icon'    => 'fas fa-wallet',
-            'icon_color' => 'cyan',
-            'submenu' => [
-                [
-                    'text' => 'Ver Resumen',
-                    'url'  => '/cuentas',
-                ],
-                [
-                    'text'    => 'Agregar movimiento',
-                    'url'     => '/movimientos',
-                    'id'  => 'linkmovimientos',
-                ],
-                [
-                    'text' => 'Administrar cuentas',
-                    'url'  => '/administrarcuentas',
-                    'id'  => 'linkadministrarcuentas',
-                ],
-            ],
-        ],*/
         [
             'text' => 'Mi Perfil',
             'url'  => '/empresa/perfil',
             'icon' => 'fas fa-fw fa-user',
-            //'icon_color' => 'cyan',
         ],
         [
             'text'       => 'Cerrar sesion',

@@ -1,8 +1,27 @@
 .lblRecuperarContra{
     transition: font-size 200ms ease-in-out;
     line-height: 2;
+    font-size: 21px;/*19px;*/
+    color: white;
 }
 .lblRecuperarContra:hover{
-    font-size: larger;
+    font-size: 23px;/*22px;*/
     cursor: pointer;
+}
+#contenedorLogo{
+    width: 100%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+    align-content: center;
+}
+#contenedorLogoPago{
+    width: 42%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+    align-content: center;
+}
+#logo{
+    width: 80%;
 }

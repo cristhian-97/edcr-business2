@@ -1,29 +1,39 @@
 body {
-    background: rgb(56, 0, 54);
-    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
     margin: 0;
     font-family: 'Raleway', sans-serif;
     justify-content: center;
 }
 
 .centroblanco {
-    position: relative;
-    background-color: rgb(226, 226, 226);
+    /*position: relative;
     border-radius: 20px;
     min-width: 500px;
     width: 50vw;
     height:auto;
     margin-left: 24vw;
+    margin-top: 10vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 50px;*/
+    position: relative;
+   
+    border-radius: 8px;
+    min-width: 500px;
+    width: 70vw;
+    height:auto;
+    margin-left: 15vw;
     margin-top: 20vh;
     text-align: center;
     display: flex;
     justify-content: center;
-    padding-bottom: 50px; 
+    padding-bottom: 50px;
 }
 
 .centroblanco2 {
     position: relative;
-    background-color: rgb(226, 226, 226);
+    /*background-color: rgb(226, 226, 226);*/
     border-radius: 20px;
     min-width: 500px;
     width: 50vw;
@@ -35,30 +45,55 @@ body {
     padding-bottom: 50px; 
 }
 
+.centroblanco3 {
+    position: relative;
+    border-radius: 20px;
+    min-width: 500px;
+    width: 70vw;
+    height:auto;
+    margin-left: 24vw;
+    margin-top: 1vh;
+    text-align: left;
+    justify-content: center;
+    padding-bottom: 50px; 
+}
+.alineacionCentro {
+    text-align: center;
+}
+
 #contenedorTitulo {
     position: absolute;
     width: 70vw;
     height: 25vh;
     top: 0;
-    left: 15vw;
+    left: 13vw;
     color: white;
     padding-top: 5vh;
+    align-content: center;
 }
 #titulo {
     position: relative;
     display: inline-block;
     width: 100%;
     text-align: center;
-    font-size: 50px;
+    font-size: 30px;/*25px;*/
+}
+#tituloregemp{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 30px;/*25px;*/
+    margin-top: 5;
 }
 
 .contenedorcentroderecha{
-    width: 50%;
+    width: 70%;
     padding-top: 5%;
     text-align: center;
 }
 .contenedorcentroIzquierda{
-    width: 50%;
+    width: 30%;
     padding-top: 5%;
     display: flexbox;
     vertical-align: middle;
@@ -96,23 +131,73 @@ body {
 }
 .cajatexto{
 	padding: 5px;
-	margin: 10px;/*Este dato para darle el efecto con el placeholder*/
+	margin: 10px;
 	border-radius: 5px;
-	border: 1px solid #0970af;
+	border: 2px solid #898c8d;
 	width: 70%;
+    color: #fddd6e;
+    transition: all 0.5s ease-in-out;
+    height: 40px;
+    background-color: transparent;
+    font-size:18px;/*17px;*/
+    letter-spacing: 1px;
+}
+.cajatextoreg{
+	padding: 5px;
+	margin: 10px;
+	border-radius: 5px;
+	border: 2px solid #898c8d;
+	width: 95%;
+    color: #fddd6e;
+    transition: all 0.5s ease-in-out;
+    background-color: transparent;
+    font-size:18px;/*17px;*/
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    height: 55px;
+    letter-spacing: 1px;
+}
+.cajatextoedt{
+	padding: 5px;
+	margin-top: 10px;
+    margin-bottom: 10px;
+	border-radius: 5px;
+	border: 2px solid #455A64;
+	width: 100%;
+    color: #fddd6e;
+    transition: all 0.5s ease-in-out;
+    background-color: transparent;
+    font-size:18px;/*17px;*/
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    height: 55px;
+    letter-spacing: 1px;
+}
+
+.cajat{
+	padding: 5px;
+	margin-top: 10px;
+    margin-bottom: 10px;
+	border-radius: 5px;
+	border: 2px solid #455A64;
+    background:#fddd6e;
+	width: 95%;
     color: black;
     transition: all 0.5s ease-in-out;
-    height: 25px;
+    font-size:18px;/*17px;*/
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    height: 55px;
+    letter-spacing: 1px;
 }
+
 .cajatexto2{
 	width: 50%;    
 }
-#sinadasucede{
-    color:white;
-    position:absolute;
-    width: 100%;
-    text-align: center;
-    bottom: 15vh;
+
+.tituloBlanco{
+    color: white;
+    font-size: bold;
 }
 @media only screen and (max-width: 700px) {
     .centroblanco {
@@ -145,7 +230,7 @@ body {
 
 
 #contenedorcerro{/*contiene el texto de la pantalla nolog*/
-    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
     color: white;
     position:absolute;
     width: 100vw;
@@ -160,55 +245,146 @@ body {
     font-size:25px;
 }
 
+#cerrosession2{
+    font-size:20px;
+}
+
 #sinadasucede{
     color:white;
     position:absolute;
     width: 100%;
     text-align: center;
     bottom: 15vh;
+    font-size: 19px;
 }
 
 .btnFormat{
-	border-radius: 17px;
+	border-radius: 7px;
 	color: #FFF;
 	position: relative;
 	border: 0px;
 	margin: 10px 0 0 0;
 	height: 40px;
-	width: 80px;	
+	padding-left: 1.5%;
+    padding-right: 1.5%;
+    font-size:18px;
+    font-weight: bold;
+    width: 25%;
+    transition: .2s;
+    animation: ripple .7s linear;
+}
+.btnFormatEdit{
+	border-radius: 7px;
+	color: #FFF;
+	position: relative;
+	border: 0px;
+	margin: 10px 0 0 0;
+	height: 40px;
+	padding-left: 1.5%;
+    padding-right: 1.5%;
+    font-size:18px;/*17px;*/
+    font-weight: bold;
+    width: 15%;
+    transition: .2s;    
 }
 
 #btn_login,#btn_registrar,#btn_recuperar,#btn_cambio{
-    background: #0970af;
+    background:rgb(253, 221, 110);
+    color: #000000;
 }
-#btn_registro{
-	background: #af5f09;
+#btn_registro,#btn_cancelarReg,#btn_cancelarRec{
+	background:rgb(0, 0, 0);
 	justify-self: center;
+    font-size: 18px;
+}
+#btn_registro2{
+	background:rgb(17, 17, 17);
+	justify-self: center;
+    font-size: 18px;
 }
 
-#btn_login:hover,#btn_registrar:hover,#btn_recuperar:hover,#btn_cambio{
-	background: #1A91DA;
+#btn_registro2:hover{
 	cursor: pointer;
-}
-#btn_registro:hover{
-	background: #da871a;
-	cursor: pointer;
+    background:rgb(34, 34, 34);
 }
 
-#btn_cancelar{
-    background: #dc3545;
-	padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-	
-    font-family:Arial;     
+#btn_cotizar{
+    background:rgb(253, 221, 110);
+    color: #000000;
+    width: 30%;
+    
+}
+
+#btn_acuerdo{
+    background:rgb(253, 221, 110);
+    color: #000000;
+    width: 80%;
+}
+
+#btn_desacuerdo{
+	background:rgb(0, 0, 0);
+	justify-self: center;
+    width: 90%;
+    
+}
+
+#btn_login:hover,#btn_registrar:hover,#btn_recuperar:hover,#btn_cambio:hover,#btn_cotizar:hover,.btn_verPerfil:hover,#btn_acuerdo:hover{
+	cursor: pointer;
+    background:rgb(253, 204, 93);
+}
+#btn_registro:hover,#btn_cancelarReg:hover,#btn_cancelarRec:hover,#btn_desacuerdo:hover{
+	cursor: pointer;
+    background:rgb(17, 17, 17);
+}
+.btn_verPerfil{
+    background:rgb(253, 221, 110);
+    color: #000000;
+    width: 70%;
+    border-radius: 7px;
+    position: relative;
+	height: 40px;
+	padding-left: 1.5%;
+    padding-right: 1.5%;
+    font-size:17px;
+    font-weight: bold;
+    transition: .2s;
+}
+.btnContactar{
+    background:rgb(253, 221, 110);
+    color: #000000;
+    width: 100%;
+    border-radius: 7px;
+    position: relative;
+	height: 40px;
+	padding-left: 1.5%;
+    padding-right: 1.5%;
+    font-size:17px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+#btn_cancelar,#btn_cancelarCotizacion,#btn_atrasPerfil,#btn_atrasPago{
+    font-family:Arial;
     font-family: 'Raleway', sans-serif;
+    background:#455A64;/*(69, 90, 100);*/
+	justify-self: center;
+    font-size:18px;/*17px;*/
+    font-weight: bold;
+    border-radius: 7px;
+    height: 40px;
+	padding-left: 2%;
+    padding-right: 2%;
+    color: white;
+}
+#btn_atrasPago{
+    width: 6%;
+    padding: 0%;
 }
 
-#btn_cancelar:hover{
-    background: #c82333;
-	cursor: pointer;
+#btn_cancelar:hover,#btn_cancelarCotizacion:hover,#btn_atrasPerfil:hover,#btn_atrasPago:hover{
+    cursor: pointer;
+    background:rgb(101, 119, 128);
+    color: white;
 }
 #logoLogin{
     max-width: 65%;
@@ -216,17 +392,108 @@ body {
 
 .errMsg{
     color: red;
+    font-size: 18px;
 }
+
 .container-fluid{
-    background: linear-gradient(90deg, rgb(187, 187, 187) 0%, rgb(15, 53, 53) 100%);
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
+}
+
+.container-fluid2{
+    background: #36464e;
 }
 
 .popup:hover{
     cursor: pointer;
 }
-/*.frenillos{
-    display: inline-flex;
-    align-items: center;
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #fddd6e;
+    opacity: 1; /* Firefox */
+    font-size:17px;
+}
+  
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #fddd6e;
+}
+  
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: #fddd6e;
+} 
+.etiquetasRegistro{
+    color: white;
+    font-size: 19px;
+}
+.btn{/*background:rgb(0, 0, 0);*/
+	justify-self: center;
+    transition: .2s;
+    overflow: hidden;/*background:rgb(253, 221, 110);color: #000000;*/
+    color: #ffffff;
+    font-size:18px;
+    font-weight: bold;
+    border-radius: 7px;
+    height: 40px;
+	padding-left: 2%;
+    padding-right: 2%;
+}
+
+.btn:hover{
     cursor: pointer;
-    font-family: arial;
+    background:rgb(17, 17, 17);
+}
+
+.selc{
+    background:#fddd6e;
+    justify-self: center;
+    transition: .2s;
+    overflow: hidden;
+    color: black;
+    font-size:17px;
+    font-weight: bold;
+    border-radius: 7px;
+    height: 40px;
+	padding-left: 2%;
+    padding-right: 2%;
+    border: 2px solid #455A64;
+}
+
+.selcValue{
+    color: #000000;
+    font-size:17px;
+    font-weight: bold;
+}
+
+.selcCot{
+    background:#ffffff;
+    justify-self: center;
+    transition: .2s;
+    overflow: hidden;
+    color: black;
+    font-size:17px;
+    font-weight: bold;
+    border-radius: 7px;
+    height: 40px;
+	padding-left: 2%;
+    padding-right: 2%;
+}
+
+.inicio{
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    justify-content: center;    
+}
+/*@keyframes ripple {
+    0%{
+        width: 0;
+        height: 0;
+    }
+    80%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        width: 200px;
+        height: 200px;
+    }
 }*/

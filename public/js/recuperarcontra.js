@@ -4,7 +4,7 @@ var usuario, btnCancelar;
 
 function iniciar() {
     usuario = document.getElementById('txt_usuario');
-    btnCancelar =document.getElementById('btn_cancelar');
+    btnCancelar =document.getElementById('btn_cancelarRec');
     usuario.focus();
     btnCancelar.addEventListener('click',cancelar,false);
 }

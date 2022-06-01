@@ -80,7 +80,7 @@
             function espera(){
                 setTimeout(function(){
                     window.location.href = getbaseurl()+'/dashboard';
-                },3000);
+                },1000);
             }
             paypal.Buttons({
                 style: {

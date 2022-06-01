@@ -14,24 +14,24 @@
     <title>EDCR Business</title>
 </head>
 
-<body>
+<body><br><br><br><br>
     <div id="contenedorTitulo">
         <label id="titulo">Recuperar contraseña</label>
-    </div>
-    
+    </div>    
     <form id="formlogin" method="POST" autocomplete="off">
         {{csrf_field()}}
-        <div class="centroblanco" style="display: block;"><br>
-            <br>
-            <label>Ingrese su usuario</label><br>
+        <div class="centroblanco2" style="display: block;"><br>
+            <br><br><br><br>
+            <label class="etiquetasRegistro">Ingrese su usuario</label><br>
             <input type="text" name="usuario" placeholder="Usuario" title="Usuario" class="cajatexto" id="txt_usuario" value="{{ old('usuario') }}">
             @error('usuario')<p class="error-message errMsg">{{ $message }}</p>@enderror        
-            <div>
-                <input type="button" value="Cancelar" name="btn_cancelar" class="btnFormat" id="btn_cancelar">
+            <br><br>
+            <div class="mt-3">
+                <input type="button" value="Cancelar" name="btn_cancelar" class="btnFormat" id="btn_cancelarRec">&nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="submit" value="Ok" name="btn_recuperar" class="ml-10 btnFormat" id="btn_recuperar">
             </div>
         </div>
-    </form>
+    </form><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
 <?php

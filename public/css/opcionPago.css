@@ -1,0 +1,116 @@
+body {
+    background: linear-gradient(rgb(0, 0, 0) 10%, rgb(54, 70, 78));
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    justify-content: center;
+}
+.btnFormat{
+	border-radius: 7px;
+	color: #FFF;
+	position: relative;
+	border: 0px;
+	margin: 10px 0 0 0;
+	height: 40px;
+	padding-left: 1.5%;
+    padding-right: 1.5%;
+    font-size:19px;
+    font-weight: bold;
+    width: 20%;
+    transition: .2s;
+    animation: ripple .7s linear;
+}
+#contenedorTitulo {
+    position: absolute;
+    width: 70vw;
+    height: 25vh;
+    top: 0;
+    left: 13vw;
+    color: white;
+    padding-top: 5vh;
+    align-content: center;
+}
+#titulo {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 25px;
+    color: white;
+}
+.centroblancoOP {
+    position: relative;   
+    border-radius: 8px;
+    min-width: 500px;
+    width: 70vw;
+    height:auto;
+    margin-left: 15vw;
+    margin-top: 7vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 50px;
+}
+.contenedorcentroIzquierda{
+    width: 30%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+}
+#contenedorLogoPago{
+    width: 100%;
+    padding-top: 5%;
+    display: flexbox;
+    vertical-align: middle;
+    align-content: center;
+}
+#logo{
+    position: relative;
+    display: inline-block;
+    width: 80%;
+}
+.contenedorcentroderecha{
+    width: 70%;
+    padding-top: 5%;
+    text-align: center;
+}
+#btn_pagoPaypal,#btn_pagoDeposito,#btn_pagoDepositar,#btn_siguiente{
+    background:rgb(253, 221, 110);
+    color: #000000;
+}
+#btn_pagoPaypal:hover,#btn_pagoDeposito:hover,#btn_pagoDepositar:hover,#btn_siguiente:hover{
+	cursor: pointer;
+    background:rgb(253, 204, 93);
+}
+#btn_pagoDepositar,#btn_siguiente{
+    width: 20%;
+}
+.centroblanco3 {
+    position: relative;
+    border-radius: 20px;
+    min-width: 500px;
+    width: 70vw;
+    height:auto;
+    margin-left: 24vw;
+    margin-top: 1vh;
+    text-align: left;
+    justify-content: center;
+    padding-bottom: 50px; 
+}
+.cajatextopago{
+	padding: 5px;
+	margin: 10px;
+	border-radius: 5px;
+	border: 2px solid #898c8d;
+	width: 70%;
+    height: 70%;
+    color: #fddd6e;
+    transition: all 0.5s ease-in-out;
+    height: 40px;
+    background-color: transparent;
+    font-size:18px;/*17px;*/
+    letter-spacing: 1px;
+}
+.error{
+    color: red;
+    font-size: 18px;
+}

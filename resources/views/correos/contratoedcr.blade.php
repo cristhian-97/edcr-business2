@@ -23,6 +23,14 @@
             </div><br>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
                 <div class="col-3">
+                    <label style="font-size: 17px;font-weight: bold;">Comunicarse al: </label>
+                </div>
+                <div class="col-4">
+                    <label style="font-size: 17px;font-weight: bold;">{{$correo}}</label>
+                </div>
+            </div>
+            <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
+                <div class="col-3">
                     <label style="font-size: 17px;font-weight: bold;">Facturar a</label>
                 </div>
                 <div class="col-4">
@@ -37,10 +45,10 @@
             </div>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
                 <div class="col-3" style="font-size:17px;">
-                   {{$nombres}}
+                   {{$usuarioEDCR}}
                 </div>
                 <div class="col-4" style="font-size:17px;">
-                     {{$correos}}
+                     {{$correoedcr}}
                     <br>
                 </div>
                 <div class="col-3">
@@ -55,14 +63,14 @@
                     <label style="font-size:17px;">Usuario EDCR: </label>
                 </div>
                 <div class="col-3" style="font-size:17px;">
-                    {{$usuarioEDCRDEfinitivo}}
+                    {{$usuarioEDCR}}
                 </div>
             </div>
             <br>
             <div class="row" style="text-justify: initial;text-align: justify;word-wrap: break-word;margin-top: 4%;">
                 <table class="table">
                     <thead>
-                        <th>CANT.</th>
+                        <th>CANT.</th>                        
                         <th>DESCRIPCIÓN</th>
                         <th>PRECIO UNITARIO</th>
                         <th>IMPORTE</th>
@@ -103,7 +111,7 @@
                     <div class="col-8" style="font-size:17px;">
                         <label>Para aceptar la oferta debe ir al sistema y aceptar el contrato mediante el siguiente enlace: </label>
                     </div>
-                    <div class="col-4"><!--contratar2-->
+                    <div class="col-4">
                         <form action="{{ $url }}" method="post" target="_blank">
                             {{csrf_field()}}
                             <input type="text" name="codigo" value="{{$codigo}}" hidden>
@@ -111,7 +119,7 @@
                             <input type="text" name="cotizacion" value="{{$idCotizacion}}" hidden>
                             <input type="text" name="empresa" value="{{$idEmpresa}}" hidden>
                             <button type="submit" style="background:rgb(253, 221, 110);color: #000000;width: 100%;border-radius: 7px;position: relative;
-	                            height: 40px;padding-left: 1.5%;padding-right: 1.5%;font-size:17px;font-weight: bold;transition: .2s;">Aceptar Oferta</button>
+	                            height: 40px;padding-left: 1.5%;padding-right: 1.5%;font-size:18px;font-weight: bold;transition: .2s;">Aceptar Oferta</button>
                         </form>
                     </div>   
                 </div>

@@ -19,6 +19,14 @@ class Categoria extends Model
 
     public function obtenerPrecioComision(){
         return DB::table('tbparametros')->where('clave','comision')->first();
+    }
+
+    public function obtenerPrecioCotizacion(){
+        return DB::table('tbparametros')->where('clave','contrato')->first();
+    }
+
+    public function obtenerCorreo(){
+        return DB::table('tbparametros')->where('clave','correoedcr')->first();
     }    
     
     public function cotizar2(){
@@ -39,15 +47,114 @@ class Categoria extends Model
               $aux = $arreglo[$a];
         }
         return $nuevaLista;
+    }   
+
+    public function cotizarSinFiltros(){
+        $idCategoria = $_POST['idCategoria'];
+        $clientes = Array();
+        $whereArray=Array();
+        $clientesAux2 = DB::table('tbclientes as c')
+                                ->select('c.codigo','c.nombre as nombreCliente', 'c.color_ojos','c.medidas','c.calzado','c.peso','c.altura',
+                                         'c.preciohora','c.correo','c.disponibilidad','c.transporte','c.portada','c.telefono','c.altura',
+                                         'c.peso','c.disponibilidad','c.facturaelectronica','c.experiencia','c.color_ojos','c.grado_academico',
+                                         'c.cursos','c.cabello','c.frenillos','c.tattos','c.idioma','c.uniforme','c.pasaporte','c.licencia',
+                                         'c.instPrincipal','c.instSecundario','c.compositor','c.miFuerte','c.equipoPropio','c.luces',
+                                         'c.equipoSonido','c.equipoSonido','c.generosMusicales','c.deportes','c.musica','c.equipoList',
+                                         'c.habilidades','c.orden','c.direccion','c.cursos','c.sobre_mi','c.demos')
+                                ->where('c.rol',$idCategoria)->get();
+        if(sizeof($clientesAux2)>0){
+            for($f=0; $f<sizeof($clientesAux2); $f++)
+                array_push($clientes,$clientesAux2[$f]);
+            if(sizeof($clientes)==0)
+                return "vacio";
+        }else
+            return "vacio";
+           
+        $cliXAT = DB::table('tbclientes as cl')
+                            ->join('tbtrabajosxusuario as txu','cl.codigo','=','txu.usuario')
+                            ->join('tbcaracteristicasxrol as aT','aT.idRol','=','cl.rol')
+                            ->select('cl.codigo','cl.nombre as nombreCliente', 'cl.color_ojos','cl.medidas','cl.calzado','cl.peso','cl.altura',
+                                     'cl.preciohora','aT.id','aT.nombre as nombreAT')
+                            ->where('cl.rol',$idCategoria)
+                            ->whereRaw("upper(txu.trabajo) LIKE upper(aT.nombre)")
+                            ->groupBy('cl.codigo','aT.id')
+                            ->get();
+
+        $cliXPerfil = DB::table('tbclientes as cl2')
+                            ->join('tbimagenesxusuario as im','cl2.codigo','=','im.idEdecan')
+                            ->select('cl2.codigo','cl2.nombre as nombreCliente', 'cl2.color_ojos','cl2.medidas','cl2.calzado','cl2.peso','cl2.altura',
+                                     'cl2.preciohora','im.url as urlperfil')
+                            ->where('cl2.rol',$idCategoria)        
+                            ->get();                            
+
+        $clientesDefinitivos = Array();
+        $cantXCotiz = $_POST['cantidad'];
+
+        $longitud = count($clientes);
+        for ($i = 0; $i < $longitud; $i++) {
+            for ($j = 0; $j < $longitud - 1; $j++) {
+                if ($clientes[$j]->orden > $clientes[$j + 1]->orden) {
+                    $temporal = $clientes[$j];
+                    $clientes[$j] = $clientes[$j + 1];
+                    $clientes[$j + 1] = $temporal;
+                }
+            }
+        }
+
+        $clientesOrden0 = Array();
+        $clientesOrdenMen10 = Array();
+        $clientesOrdenMayIg10 = Array();
+
+        for($n=0; $n<sizeof($clientes);$n++){
+            if($clientes[$n]->orden==0)
+                array_push($clientesOrden0,$clientes[$n]);
+            else if($clientes[$n]->orden<10)
+                array_push($clientesOrdenMen10,$clientes[$n]);
+            else
+                array_push($clientesOrdenMayIg10,$clientes[$n]);
+        }
+        $clientesTemp = Array();
+        for($n=0; $n<sizeof($clientesOrdenMen10);$n++)
+            array_push($clientesTemp,$clientesOrdenMen10[$n]);
+        for($n=0; $n<sizeof($clientesOrden0);$n++)
+            array_push($clientesTemp,$clientesOrden0[$n]);
+        for($n=0; $n<sizeof($clientesOrdenMayIg10);$n++)
+            array_push($clientesTemp,$clientesOrdenMayIg10[$n]);
+
+        $clientes = $clientesTemp;    
+        
+        if($cantXCotiz==1){
+            for($d=0;$d<sizeof($clientes);$d++)
+                array_push($clientesDefinitivos,[[$clientes[$d]],1,$cliXAT,$cliXPerfil]);
+            return $clientesDefinitivos;     
+        }else{
+            if(sizeof($clientes)<=$cantXCotiz)
+                    array_push($clientesDefinitivos,[$clientes,sizeof($clientes),$cliXAT,$cliXPerfil]);
+            else{
+                $contador = 0;
+                $listaClientes=Array();
+                for($a=0; $a<sizeof($clientes); $a++){
+                    $contador++;
+                    if($contador<=$cantXCotiz)
+                        array_push($listaClientes,$clientes[$a]);
+
+                    if($contador==$cantXCotiz){
+                        array_push($clientesDefinitivos,[$listaClientes,$cantXCotiz,$cliXAT,$cliXPerfil]);
+                        $contador=0;
+                        $listaClientes=Array();
+                    }
+                }
+                if($contador>0)
+                    array_push($clientesDefinitivos,[$listaClientes,sizeof($listaClientes),$cliXAT,$cliXPerfil]);
+            }
+        }
+        return $clientesDefinitivos;        
     }
-
-    
-
 
     public function cotizar(){
         $idCategoria = $_POST['idCategoria'];
         $clientes = Array();
-        $clie = ['altura'=>"1.70",'cabello'=>"corto","calzado"=>"37","codigo"=>"0","color_ojos"=>"café",
+        /*$clie = ['altura'=>"1.70",'cabello'=>"corto","calzado"=>"37","codigo"=>"0","color_ojos"=>"café",
         "compositor"=>null,"correo"=>"maria@gmail.com","cursos"=>null,"deportes"=>"Natación. Gym. ","disponibilidad"=>"",
         "equipoList"=>null,
         "equipoPropio"=>null,
@@ -76,7 +183,7 @@ class Categoria extends Model
         "telefono"=>8888888,
         "transporte"=>"SI",
         "uniforme"=>"formal"];
-        //array_push($clientes,$clie);
+        //array_push($clientes,$clie);*/
         
         $whereArray=Array();
         array_push($whereArray,['c.rol',$idCategoria]);
@@ -615,6 +722,13 @@ class Categoria extends Model
                           ->whereRaw("upper(txu.trabajo) LIKE upper(aT.nombre)")
                           ->groupBy('cl.codigo','aT.id')
                           ->get();
+
+        $cliXPerfil = DB::table('tbclientes as cl2')
+                            ->join('tbimagenesxusuario as im','cl2.codigo','=','im.idEdecan')
+                            ->select('cl2.codigo','cl2.nombre as nombreCliente', 'cl2.color_ojos','cl2.medidas','cl2.calzado','cl2.peso','cl2.altura',
+                                     'cl2.preciohora','im.url as urlperfil')
+                            ->where('cl2.rol',$idCategoria)        
+                            ->get();
         
         $clientesDefinitivos = Array();
         $cantXCotiz = $_POST['cantidad'];
@@ -658,11 +772,11 @@ class Categoria extends Model
         
         if($cantXCotiz==1){
             for($d=0;$d<sizeof($clientes);$d++)
-                array_push($clientesDefinitivos,[[$clientes[$d]],1,$cliXAT]);
+                array_push($clientesDefinitivos,[[$clientes[$d]],1,$cliXAT,$cliXPerfil]);
             return $clientesDefinitivos;     
         }else{                   
             if(sizeof($clientes)<=$cantXCotiz)
-                    array_push($clientesDefinitivos,[$clientes,sizeof($clientes),$cliXAT]);
+                    array_push($clientesDefinitivos,[$clientes,sizeof($clientes),$cliXAT,$cliXPerfil]);
             else{
                 $contador = 0;
                 $listaClientes=Array();                                
@@ -672,13 +786,13 @@ class Categoria extends Model
                         array_push($listaClientes,$clientes[$a]);
 
                     if($contador==$cantXCotiz){
-                        array_push($clientesDefinitivos,[$listaClientes,$cantXCotiz,$cliXAT]);
+                        array_push($clientesDefinitivos,[$listaClientes,$cantXCotiz,$cliXAT,$cliXPerfil]);
                         $contador=0;
                         $listaClientes=Array();
                     }
                 }
                 if($contador>0)
-                    array_push($clientesDefinitivos,[$listaClientes,sizeof($listaClientes),$cliXAT]);
+                    array_push($clientesDefinitivos,[$listaClientes,sizeof($listaClientes),$cliXAT,$cliXPerfil]);
             }
         }
         return $clientesDefinitivos;

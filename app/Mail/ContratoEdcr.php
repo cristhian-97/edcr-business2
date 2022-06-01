@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class Contrato extends Mailable
+class ContratoEdcr extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -16,12 +16,12 @@ class Contrato extends Mailable
      *
      * @return void
      */
-    public function __construct($nombre,$nombres,$numero,$correos,$fecha,$cant,$nombreCat,$lugar,$funcion,$disp2,$transp,$precioCt,$imprte,$iva,$totl,$comsion,
-                                $fechaEv,$horaEv,$usuarioEDCRDEfinitivo,$url,$codigo,$idCategoria,$idCotizacion,$idEmpresa,$simbolo){
-        $this->nombre = $nombre;
-        $this->nombres = $nombres;
+    public function __construct($correo,$usuarioEDCR,$correoedcr,$numero,$fecha,$cant,$nombreCat,$lugar,$funcion,$disp2,$transp,$precioCt,$imprte,$iva,$totl,
+                                $comsion,$fechaEv,$horaEv,$url,$codigo,$idCategoria,$idCotizacion,$idEmpresa,$simbolo){
+        $this->correo = $correo;
+        $this->usuarioEDCR = $usuarioEDCR;
+        $this->correoedcr = $correoedcr;
         $this->numero = $numero;
-        $this->correos = $correos;
         $this->fecha =$fecha;
         $this->cant =$cant;
         $this->nombreCat=$nombreCat;
@@ -36,13 +36,12 @@ class Contrato extends Mailable
         $this->comsion=$comsion;
         $this->fechaEv=$fechaEv;
         $this->horaEv=$horaEv;
-        $this->usuarioEDCRDEfinitivo=$usuarioEDCRDEfinitivo;
         $this->url=$url;
         $this->codigo=$codigo;
         $this->idCategoria=$idCategoria;
         $this->idCotizacion=$idCotizacion;
         $this->idEmpresa=$idEmpresa;
-        $this->simbolo=$simbolo;
+        $this->simbolo=$simbolo;      
     }
 
     /**
@@ -52,14 +51,11 @@ class Contrato extends Mailable
      */
     public function build()
     {
-        /*return $this->view('correos/contrato')->from('sistemasfabok@gmail.com')->subject('Oferta de Trabajo| EDCR Business')->with([
-            'nombre' => $this->nombre,
-        ]);*/
-        return $this->view('correos/contrato')->from('sistemasfabok@gmail.com')->subject('Oferta Laboral| EDCR Business')->with([
-            'nombre' => $this->nombre,
-            'nombres'=>$this->nombres,
+        return $this->view('correos/contratoedcr')->from('sistemasfabok@gmail.com')->subject('Oferta Laboral| EDCR Business')->with([
+            'correo' => $this->correo,
+            'usuarioEDCR' => $this->usuarioEDCR,
+            'correoedcr'=>$this->correoedcr,
             'numero'=>$this->numero,
-            'correos'=>$this->correos,
             'fecha'=>$this->fecha,
             'cant'=>$this->cant,
             'nombreCat'=>$this->nombreCat,
@@ -74,7 +70,6 @@ class Contrato extends Mailable
             'comsion'=>$this->comsion,
             'fechaEv'=>$this->fechaEv,           
             'horaEv'=>$this->horaEv,
-            'usuarioEDCRDEfinitivo'=>$this->usuarioEDCRDEfinitivo,
             'url'=>$this->url,
             'codigo'=>$this->codigo,
             'idCategoria'=>$this->idCategoria,

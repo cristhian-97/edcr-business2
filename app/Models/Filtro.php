@@ -64,4 +64,7 @@ class Filtro extends Model
         return DB::table('tbcaracteristicasxrol')->get();
     }
 
+    public function obtenerTotal($id){
+        return DB::table('tbcotizacionesenviadas')->where('id', $id)->first();
+    }
 }

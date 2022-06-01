@@ -17,8 +17,9 @@ class CategoriaController extends Controller
     public function index(){
         if(DashboardController::estaLogeado()){
             $categorias = Categoria::obtenerCategorias();
-            $comision = Categoria::obtenerPrecioComision();
-            return view('categoria.categoria',['categorias'=>$categorias,'comision'=>$comision]);
+            $comision = Categoria::obtenerPrecioCotizacion();
+            $correoEDCR = Categoria::obtenerCorreo();
+            return view('categoria.categoria',['categorias'=>$categorias,'comision'=>$comision,'correoedcr'=>$correoEDCR]);
         }
     }
 
@@ -97,6 +98,7 @@ class CategoriaController extends Controller
              * tbmusica (id, descripcion, estado). Ej: Rock en Español, Rock en Inglés, Latino
              */
             $comision = $request->comision;
+            $correoedcr = $request->correoedcr;
             $cat = Categoria::obtenerCategoria($request->id);
             $areasTrabajo=null;
             $deportes=null;
@@ -126,7 +128,8 @@ class CategoriaController extends Controller
             }
             $emp = $_SESSION['empresa'];
             return view('categoria.categoriaInfo',['categoria'=>$cat,'areasTrabajo'=>$areasTrabajo,'deportes'=>$deportes, 'idiomas'=>$idiomas, 'equipos'=>$equipos,
-                                                    'musica'=>$musica,'generosMusicales'=>$generosMusicales,'empId'=>$emp->id,'comision'=>$comision]);
+                                                    'musica'=>$musica,'generosMusicales'=>$generosMusicales,'empId'=>$emp->id,'comision'=>$comision,
+                                                    'correoedcr'=>$correoedcr]);
         }
     }
 
@@ -135,8 +138,12 @@ class CategoriaController extends Controller
     }
 
     public function cotizar(){
-        if(isset($_POST['idCategoria']))
-            return Categoria::cotizar();
+        if(isset($_POST['idCategoria'])){
+            if($_POST['filtros']=="SI")
+                return Categoria::cotizar();
+            else if($_POST['filtros']=="NO")
+                return Categoria::cotizarSinFiltros();    
+        }
         return "Error";
     }
 

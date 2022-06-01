@@ -139,7 +139,7 @@ class EmpresaController extends Controller
             case 'pagoComision':
                 return redirect()->route('pagoComision');
                 break;    
-            case 'noRegistrada' || 'noLogeada': //error de usuaro o contraseña
+            case 'noregistrada' || 'nologeada': //error de usuaro o contraseña
                 return view("login",['noLogeado' => 'Nombre de usuario o contraseña incorrecta por favor intente de nuevo.','usuarioIng'=>$request->usuario,'contraIng'=>$request->contrasena]);
                 break;
         }
@@ -163,7 +163,15 @@ class EmpresaController extends Controller
 
     public function contactar(){
         return Empresa::contrato();
-    }    
+    }
+
+    public function notificarEmpresa(){
+        return Empresa::notificarEmpresa();
+    }
+    
+    public function notificarEmpresaXCandidato(){
+        return Empresa::notificarEmpresaXCandidato();
+    }  
 
     public function cambiarContra(Request $request){
         $request->validate([
@@ -186,9 +194,56 @@ class EmpresaController extends Controller
 
     public function paypal(){
         if(DashboardController::estaLogeado())
-           return Empresa::guardarPago();
+           return Empresa::guardarPago();//Pago de la comisión inicial
     }
     public function paypal2(){
         return Empresa::guardarPago2();
-    }    
+    }
+
+    public function pagoDepositoRegistro(){
+        return Empresa::pagoDepositoRegistro();
+    }
+
+
+
+
+
+    public function noti(){       
+        //return self::convertCurrency(5,"USD","PHP");
+        return view('contact2');
+    }
+
+    function currencyConverter($currency_from,$currency_to,$currency_input){
+        $yql_base_url = "http://query.yahooapis.com/v1/public/yql";
+        $yql_query = 'select * from yahoo.finance.xchange where pair in ("'.$currency_from.$currency_to.'")';
+        $yql_query_url = $yql_base_url . "?q=" . urlencode($yql_query);
+        $yql_query_url .= "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+        $yql_session = file_get_contents($yql_query_url);
+        $yql_json =  json_decode($yql_session,true);
+        $currency_output = (float) $currency_input*$yql_json['query']['results']['rate']['Rate'];
+    
+        return $currency_output;
+    }
+
+    public function tipoPago(){
+        
+        if(isset($_POST['pago'])){
+            $emp = $_POST['idEmpresa'];
+            $comision = $_POST['comision'];
+            return view('paypal/paypal',['idEmpresa'=>$emp,'comision'=>$comision]);
+        }
+        return redirect()->back();
+    }
+    
+    /*function currencyConverter($from_Currency,$to_Currency,$amount) {
+        $from_Currency = urlencode($from_Currency);
+        $to_Currency = urlencode($to_Currency);
+        $encode_amount = 1;
+        $get = file_get_contents("https://www.google.com/finance/converter?a=$encode_amount&from=$from_Currency&to=$to_Currency");
+        $get = explode("<span class=bld>",$get);
+        $get = explode("</span>",$get[1]);
+        $converted_currency = preg_replace("/[^0-9.]/", null, $get[0]);
+        return $converted_currency;
+    }*/
+
 }
